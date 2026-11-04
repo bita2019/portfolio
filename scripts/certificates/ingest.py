@@ -9,7 +9,7 @@ from pathlib import Path
 from pymongo import MongoClient
 from pymongo.operations import SearchIndexModel
 
-from embed import DIMENSIONS, MODEL, embed
+from embed import MODEL, dimensions, embed
 from extract import embedding_text, extract_certificate
 
 INDEX = "certificates_vector"
@@ -29,7 +29,7 @@ def ensure_index(col):
             type="vectorSearch",
             definition={
                 "fields": [
-                    {"type": "vector", "path": "embedding", "numDimensions": DIMENSIONS, "similarity": "cosine"},
+                    {"type": "vector", "path": "embedding", "numDimensions": dimensions(), "similarity": "cosine"},
                     {"type": "filter", "path": "standard"},
                     {"type": "filter", "path": "organization.country"},
                     {"type": "filter", "path": "validUntil"},
