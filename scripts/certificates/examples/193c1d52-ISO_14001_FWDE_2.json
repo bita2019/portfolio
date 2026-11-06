@@ -1,0 +1,51 @@
+{
+  "fileName": "193c1d52-ISO_14001_FWDE_2.pdf",
+  "sha256": "e8b97da4f032d1a8abb0c06365c1a8854deef8edcf8697329f47255243626ca9",
+  "language": "en",
+  "registrationNo": "DAU25182",
+  "orderNo": null,
+  "certificationBody": "Frank Meckel (accredited environmental verifier DE-V-0235)",
+  "organization": {
+    "name": "Fritz Winter Eisengießerei GmbH & Co. KG",
+    "street": null,
+    "postalCode": null,
+    "city": null,
+    "country": null
+  },
+  "sites": [
+    {
+      "street": "Albert-Schweitzer-Str. 15",
+      "postalCode": "35254",
+      "city": "Stadtallendorf"
+    },
+    {
+      "street": "Daimler-Str. 14",
+      "postalCode": "35260",
+      "city": "Stadtallendorf"
+    },
+    {
+      "street": "Industriestr. 1",
+      "postalCode": "35315",
+      "city": "Homberg"
+    },
+    {
+      "street": "Bürgelweg 1",
+      "postalCode": "35321",
+      "city": "Laubach"
+    }
+  ],
+  "scope": null,
+  "standard": "DIN EN ISO 14001:2015-11",
+  "validFrom": "2025-06-14 00:00:00+00:00",
+  "validUntil": "2028-06-13 00:00:00+00:00",
+  "issuedPlace": null,
+  "issuedDate": null,
+  "signedBy": "Frank Meckel",
+  "pdf": {
+    "pages": 1,
+    "author": "Frank",
+    "creator": "Microsoft® Word 2016",
+    "createdAt": "2025-06-25 18:47:33+02:00"
+  },
+  "text": "CERTIFICATE\n\n\n\nThis is to certify that the\nEnvironmental Management System of\n\nFritz Winter\nEisengießerei GmbH & Co. KG\n\nat their sites\n\nAlbert-Schweitzer-Str. 15, D-35254 Stadtallendorf\nDaimler-Str. 14, D-35260 Stadtallendorf\nIndustriestr. 1, D-35315 Homberg\nBürgelweg 1 in D-35321 Laubach\n\n\nhas been evaluated by the\naccredited environmental verifier\nFrank Meckel - registration number DE-V-0235 -\nand that the Environmental Management System\ncorresponds to the standards\n\n\nDIN EN ISO 14001:2015-11\n\nEN ISO 14001:2015\n\n\n\nThis implies that the organisation manages and maintains its Environmental\nManagement System according to the indicated standards, and subjects it\nto annual review.\n\nReg.-No. DAU25182 This certificate is valid\n\nfrom June 14, 2025\nuntil June 13, 2028\n\n\n\n\nFrank Meckel\naccredited environmental verifier\nDE-V-0235\n Zertifikat DIN EN ISO 14001:2015-11  Certificate EN ISO 14001:2015 "
+}

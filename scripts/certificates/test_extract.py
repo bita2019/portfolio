@@ -95,3 +95,75 @@ def test_real_sample():
     assert c["standard"] == "DIN EN ISO 9001:2015"
     assert c["validUntil"].date().isoformat() == "2027-05-21"
     assert c["registrationNo"] == "12 100 9650 TMS"
+
+
+GERMAN = [
+    "ZERTIFIKAT",
+    "Zertifikat-Registrier-Nr.: 12 100 67662 TMS / Auftrags-Nr.: 70006345",
+    "Die Zertifizierungsstelle",
+    "der TUV SUD Management Service GmbH",
+    "bescheinigt, dass die Organisation",
+    "Acme Giesserei GmbH",
+    "Buergelweg 1",
+    "35321 Laubach",
+    "Deutschland",
+    "fuer den Geltungsbereich",
+    "Herstellung von Gussteilen",
+    "ein Qualitaetsmanagementsystem eingefuehrt hat und anwendet.",
+    "DIN EN ISO 9001:2015",
+    "Dieses Zertifikat ist gueltig vom 31.05.2024 bis 21.05.2027.",
+    "Fred Wenke",
+    "Leiter der Zertifizierungsstelle",
+    "Muenchen, 31.05.2024",
+]
+
+
+def test_german_layout(tmp_path):
+    lines = [l.replace("fuer", "für").replace("gueltig", "gültig") for l in GERMAN]
+    c = extract_certificate(make_pdf(tmp_path / "g.pdf", lines))
+    assert c["language"] == "de"
+    assert c["registrationNo"] == "12 100 67662 TMS" and c["orderNo"] == "70006345"
+    assert c["certificationBody"] == "TUV SUD Management Service GmbH"
+    assert c["organization"]["city"] == "Laubach" and c["organization"]["country"] == "Deutschland"
+    assert c["scope"] == "Herstellung von Gussteilen"
+    assert c["validFrom"].date().isoformat() == "2024-05-31"
+    assert c["validUntil"].date().isoformat() == "2027-05-21"
+    assert c["issuedDate"].date().isoformat() == "2024-05-31" and c["signedBy"] == "Fred Wenke"
+
+
+VERIFIER = [
+    "CERTIFICATE",
+    "This is to certify that the",
+    "Environmental Management System of",
+    "Acme Foundry",
+    "GmbH & Co. KG",
+    "at their sites",
+    "Hauptstr. 15, D-35254 Stadtallendorf",
+    "Werkweg 1 in D-35321 Laubach",
+    "has been evaluated by the",
+    "accredited environmental verifier",
+    "Jane Doe - registration number DE-V-0001 -",
+    "corresponds to the standards",
+    "DIN EN ISO 14001:2015-11",
+    "Reg.-No. DAU25182",
+    "This certificate is valid",
+    "from June 14, 2025",
+    "until June 13, 2028",
+    "Jane Doe",
+    "accredited environmental verifier",
+    "DE-V-0001",
+]
+
+
+def test_multi_site_verifier_layout(tmp_path):
+    c = extract_certificate(make_pdf(tmp_path / "v.pdf", VERIFIER))
+    assert c["language"] == "en"
+    assert c["organization"]["name"] == "Acme Foundry GmbH & Co. KG"
+    assert c["sites"] == [
+        {"street": "Hauptstr. 15", "postalCode": "35254", "city": "Stadtallendorf"},
+        {"street": "Werkweg 1", "postalCode": "35321", "city": "Laubach"},
+    ]
+    assert c["registrationNo"] == "DAU25182" and c["standard"] == "DIN EN ISO 14001:2015-11"
+    assert c["validFrom"].date().isoformat() == "2025-06-14"
+    assert c["validUntil"].date().isoformat() == "2028-06-13"
+    assert c["signedBy"] == "Jane Doe" and c["scope"] is None
