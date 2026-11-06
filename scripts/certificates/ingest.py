@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Usage: python scripts/certificates/ingest.py <file-or-dir>... [--dry-run]"""
+"""Usage: python scripts/certificates/ingest.py <file-or-dir>... [--dry-run | --json-dir DIR]"""
 import argparse
 import json
 import os
@@ -44,9 +44,19 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("targets", nargs="+")
     ap.add_argument("--dry-run", action="store_true", help="print extracted metadata only")
+    ap.add_argument("--json-dir", metavar="DIR", help="write one <pdf name>.json per certificate into DIR (no database needed)")
     args = ap.parse_args()
 
     certs = [extract_certificate(f) for f in find_pdfs(args.targets)]
+
+    if args.json_dir:
+        out = Path(args.json_dir)
+        out.mkdir(parents=True, exist_ok=True)
+        for c in certs:
+            target = out / f"{Path(c['fileName']).stem}.json"
+            target.write_text(json.dumps(c, indent=2, default=str, ensure_ascii=False), encoding="utf-8")
+            print(f"Wrote {target}")
+        return
 
     if args.dry_run:
         for c in certs:

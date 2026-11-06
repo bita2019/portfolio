@@ -10,7 +10,7 @@
 pip install -r scripts/certificates/requirements.txt
 export MONGODB_URI=...            # Atlas connection string (vector search needs Atlas)
 # embeddings run locally (sentence-transformers, no API key); set EMBEDDING_MODEL to use another model
-python scripts/certificates/ingest.py path/to/certs-or-file.pdf [--dry-run]
+python scripts/certificates/ingest.py path/to/certs-or-file.pdf [--dry-run | --json-dir out/]
 python scripts/certificates/search.py "iron foundry certified to ISO 9001"
 ```
 
