@@ -47,13 +47,30 @@ def check_url(url: str) -> None:
         return
     if parts.port not in (None, 80, 443):
         raise FetchError("Only ports 80 and 443 are allowed.", 403)
+
+    if host == "localhost" or host.endswith((".localhost", ".local", ".internal")):
+        raise FetchError(f"Host resolves to a non-public address: {host}", 403)
     try:
-        addresses = {info[4][0] for info in socket.getaddrinfo(host, parts.port or 443, proto=socket.IPPROTO_TCP)}
+        literal = {str(ipaddress.ip_address(host))}
+    except ValueError:
+        literal = set()
+    if not literal and _via_proxy(url):
+        # Behind an HTTP proxy the proxy resolves names (and this machine often cannot), so a local
+        # lookup would be both impossible and meaningless. The proxy's egress policy is the control here.
+        return
+    try:
+        addresses = literal or {info[4][0] for info in socket.getaddrinfo(host, parts.port or 443, proto=socket.IPPROTO_TCP)}
     except socket.gaierror:
         raise FetchError(f"Could not resolve host: {host}", 502)
     for address in addresses:
         if not ipaddress.ip_address(address).is_global:
             raise FetchError(f"Host resolves to a non-public address: {host}", 403)
+
+
+def _via_proxy(url: str) -> bool:
+    return not requests.utils.should_bypass_proxies(url, None) and bool(
+        requests.utils.select_proxy(url, requests.utils.get_environ_proxies(url))
+    )
 
 
 def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
@@ -68,6 +85,8 @@ def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
                                headers={"User-Agent": USER_AGENT, "Accept": "application/pdf,*/*;q=0.5"})
         except requests.Timeout:
             raise FetchError("Timed out fetching the URL.", 504)
+        except requests.exceptions.ProxyError:
+            raise FetchError("The network proxy refused or could not reach this host (check its egress allowlist).", 502)
         except requests.RequestException as error:
             raise FetchError(f"Could not fetch the URL: {error.__class__.__name__}", 502)
         if resp.is_redirect or resp.status_code in (301, 302, 303, 307, 308):

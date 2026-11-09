@@ -141,6 +141,8 @@ def test_redirect_to_private_address_is_blocked(client):
 
 
 def test_allowed_hosts(client, monkeypatch):
+    for var in ("HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy"):
+        monkeypatch.delenv(var, raising=False)  # no proxy: names are resolved locally
     monkeypatch.setenv("ALLOWED_HOSTS", "georgfischer.com")
     assert client.post("/extract", json={"url": "https://evil.example/a.pdf"}).status_code == 403
     with mock.patch("fetch.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("127.0.0.1", 443))]):
@@ -153,3 +155,16 @@ def test_api_key(client, monkeypatch):
     assert client.get("/health").status_code == 200
     assert client.post("/extract", json={"url": "https://x.example/a.pdf"}).status_code == 401
     assert client.post("/extract", json={"url": "file:///x"}, headers={"X-API-Key": "secret"}).status_code == 400
+
+
+def test_proxied_environment_skips_local_dns_but_still_blocks_literals(monkeypatch):
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:9")
+    monkeypatch.delenv("NO_PROXY", raising=False)
+    monkeypatch.delenv("no_proxy", raising=False)
+    with mock.patch("fetch.socket.getaddrinfo", side_effect=OSError("no local DNS")) as dns:
+        fetch.check_url("https://www.example.com/a.pdf")  # name: left to the proxy, no local lookup
+        dns.assert_not_called()
+        for bad in ("https://169.254.169.254/x", "https://10.0.0.1/x", "https://localhost/x", "https://db.internal/x"):
+            with pytest.raises(fetch.FetchError) as e:
+                fetch.check_url(bad)
+            assert e.value.status == 403
