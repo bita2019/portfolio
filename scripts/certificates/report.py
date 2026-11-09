@@ -6,6 +6,8 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
+from company import detect_company
+
 MAX_SCAN_PAGES = int(__import__("os").getenv("MAX_SCAN_PAGES", "300"))
 
 FRAMEWORKS = {
@@ -73,7 +75,7 @@ def _choose_title(pdf_title: str | None, heading: str | None, first_line: str | 
     return None, None
 
 
-def extract_document(path: str | Path) -> dict:
+def extract_document(path: str | Path, url: str | None = None) -> dict:
     path = Path(path)
     reader = PdfReader(path)
     if reader.is_encrypted and not reader.decrypt(""):
@@ -112,6 +114,7 @@ def extract_document(path: str | Path) -> dict:
 
     return {
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "company": detect_company(url, texts),
         "title": title,
         "titleSource": title_source,
         "pdfTitle": pdf_title,

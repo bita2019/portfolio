@@ -27,7 +27,7 @@ curl -X POST localhost:8000/extract -H 'content-type: application/json' \
 ```
 
 Returns `source` (canonical URL with tracking parameters removed, year / language / type read from the URL, HTTP headers),
-`kind` (`certificate` or `document`), the extracted `certificate` or `document` metadata, and a `validation` block
+`kind` (`certificate` or `document`), the extracted `certificate` or `document` metadata (a document includes `title` and `company` with its source and confidence), and a `validation` block
 (certificates: organization / standard / dates found and valid, expired or not yet valid; documents: title and reporting year found).
 
 The service downloads caller-supplied URLs, so it only follows http(s) on ports 80/443, re-checks every redirect, refuses hosts that

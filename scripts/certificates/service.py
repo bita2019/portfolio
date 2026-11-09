@@ -59,7 +59,7 @@ def process(url: str, now: datetime | None = None) -> dict:
     with tempfile.TemporaryDirectory() as tmp:
         path, fetched = download(url, tmp)
         try:
-            document = extract_document(path)
+            document = extract_document(path, url)
             certificate = extract_certificate(path) if looks_like_certificate(document) else None
         except Exception as error:
             raise FetchError(f"The PDF could not be read: {error}", 422)
@@ -68,6 +68,9 @@ def process(url: str, now: datetime | None = None) -> dict:
     if certificate:
         certificate.pop("text", None)
         result["certificate"] = certificate
+        name = certificate["organization"]["name"]
+        if name:  # a certificate states its holder outright, which beats guessing from the URL
+            document["company"] = {"name": name, "shortName": None, "source": "certificate", "confidence": "high", "candidates": []}
         result["validation"] = validate_certificate(certificate, now)
     result["document"] = document
     if not certificate:
