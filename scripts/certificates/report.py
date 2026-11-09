@@ -38,6 +38,41 @@ def _outline_titles(outline, depth=0, out=None, limit=80) -> list[str]:
     return out
 
 
+GENERIC_TITLE = re.compile(r"^(untitled|document\d*|microsoft (word|powerpoint)\b.*|.*\.(docx?|pptx?|indd|pdf|qxp))$", re.I)
+
+
+def _page_heading(page) -> str | None:
+    """The largest text on the page, e.g. the cover title (chunks of the same size are joined)."""
+    chunks: list[tuple[float, str]] = []
+
+    def visit(text, cm, tm, font_dict, font_size):
+        text = " ".join(text.split())
+        if len(text) > 1 and "\n" not in text.strip():
+            scale = abs(tm[3]) * (abs(cm[3]) or 1)
+            chunks.append((round(font_size * scale, 1), text))
+
+    try:
+        page.extract_text(visitor_text=visit)
+    except Exception:
+        return None
+    if not chunks:
+        return None
+    biggest = max(size for size, _ in chunks)
+    heading = " ".join(text for size, text in chunks if size >= biggest * 0.95)
+    return " ".join(heading.split())[:160] or None
+
+
+def _choose_title(pdf_title: str | None, heading: str | None, first_line: str | None) -> tuple[str | None, str | None]:
+    """Prefer a meaningful PDF title, then the cover heading, then the first line of text."""
+    if pdf_title and len(pdf_title.split()) >= 2 and not GENERIC_TITLE.match(pdf_title.strip()):
+        return pdf_title.strip(), "pdf-metadata"
+    if heading:
+        return heading, "first-page-heading"
+    if first_line:
+        return first_line, "first-line"
+    return None, None
+
+
 def extract_document(path: str | Path) -> dict:
     path = Path(path)
     reader = PdfReader(path)
@@ -72,9 +107,14 @@ def extract_document(path: str | Path) -> dict:
     except Exception:
         pass
 
+    pdf_title = (meta.title if meta and meta.title else None) or None
+    title, title_source = _choose_title(pdf_title, _page_heading(pages[0]) if len(pages) else None, first_line)
+
     return {
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-        "title": (meta.title if meta and meta.title else None) or first_line,
+        "title": title,
+        "titleSource": title_source,
+        "pdfTitle": pdf_title,
         "author": (meta.author if meta else None) or None,
         "creator": (meta.creator if meta else None) or None,
         "createdAt": created,

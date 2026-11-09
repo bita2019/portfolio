@@ -169,3 +169,29 @@ def test_proxied_environment_skips_local_dns_but_still_blocks_literals(monkeypat
             with pytest.raises(fetch.FetchError) as e:
                 fetch.check_url(bad)
             assert e.value.status == 403
+
+
+def _titled_pdf(path, metadata_title=None):
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((60, 60), "Annual figures at a glance", fontsize=11)
+    page.insert_text((60, 120), "Engineering", fontsize=40)
+    page.insert_text((60, 170), "a sustainable future 2024", fontsize=40)
+    page.insert_text((60, 220), "Revenue 224m", fontsize=14)
+    if metadata_title is not None:
+        doc.set_metadata({"title": metadata_title})
+    doc.save(path)
+    return path
+
+
+@pytest.mark.parametrize("meta,expected,source", [
+    (None, "Engineering a sustainable future 2024", "first-page-heading"),
+    ("Microsoft Word - report_final.docx", "Engineering a sustainable future 2024", "first-page-heading"),
+    ("Engineering", "Engineering a sustainable future 2024", "first-page-heading"),
+    ("Castings plc Sustainability Report 2024", "Castings plc Sustainability Report 2024", "pdf-metadata"),
+])
+def test_title_selection(tmp_path, meta, expected, source):
+    from report import extract_document
+    d = extract_document(_titled_pdf(tmp_path / "t.pdf", meta))
+    assert (d["title"], d["titleSource"]) == (expected, source)
+    assert d["pdfTitle"] == meta
