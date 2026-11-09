@@ -40,7 +40,12 @@ def _outline_titles(outline, depth=0, out=None, limit=80) -> list[str]:
     return out
 
 
-GENERIC_TITLE = re.compile(r"^(untitled|document\d*|microsoft (word|powerpoint)\b.*|.*\.(docx?|pptx?|indd|pdf|qxp))$", re.I)
+GENERIC_TITLE = re.compile(
+    r"^(untitled\b.*|(new |word |pdf )?document\d*|(powerpoint )?presentation\d*|slide \d+|microsoft (word|powerpoint)\b.*"
+    r"|.*\.(docx?|pptx?|indd|pdf|qxp))$",
+    re.I,
+)
+GENERIC_BOOKMARK = re.compile(r"^(slide|page|bookmark)\s*\d+$", re.I)
 
 
 def _page_heading(page) -> str | None:
@@ -102,6 +107,8 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
         outline = _outline_titles(reader.outline)
     except Exception:
         outline = []
+    if outline and sum(bool(GENERIC_BOOKMARK.match(t.strip())) for t in outline) > len(outline) / 2:
+        outline = []  # "Slide 1, Slide 2 ..." says nothing about the content
 
     created: datetime | None = None
     try:

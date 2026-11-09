@@ -5,7 +5,7 @@ properly spelled names ("Fonderie Ariotti", "Castings PLC"), and agreement betwe
 """
 import re
 from collections import Counter
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 LEGAL_FORMS = (
     r"plc|PLC|P\.L\.C\.|Ltd\.?|Limited|Inc\.?|Corp\.?|Corporation|LLC|GmbH(?: & Co\. KG)?|AG|SE|S\.p\.A\.?|SpA|"
@@ -18,6 +18,7 @@ REPORT_WORDS = {"annual", "sustainability", "esg", "report", "reports", "integra
                 "statement", "year", "review", "interactive", "web", "final", "doc", "document", "file", "pdf"}
 LEGAL_CASE = {"plc": "PLC", "gmbh": "GmbH", "ag": "AG", "ltd": "Ltd", "inc": "Inc", "llc": "LLC", "spa": "S.p.A.",
               "srl": "S.r.l.", "nv": "N.V.", "bv": "B.V.", "se": "SE", "ab": "AB", "asa": "ASA", "sa": "S.A."}
+GENERIC_NAME_WORDS = {"group", "company", "corporate", "global", "the", "our", "annual", "esg"}
 FIRST_PAGES = 5  # mentions on the opening pages count extra
 
 
@@ -37,7 +38,7 @@ def host_label(url: str | None) -> str | None:
 
 
 def _file_name_candidate(url: str | None) -> str | None:
-    stem = re.sub(r"\.pdf$", "", (urlsplit(url or "").path.rsplit("/", 1)[-1]), flags=re.I)
+    stem = re.sub(r"\.pdf$", "", unquote(urlsplit(url or "").path.rsplit("/", 1)[-1]), flags=re.I)
     leading = []
     for token in re.split(r"[-_\s]+", stem):
         if token.lower() in REPORT_WORDS or re.fullmatch(r"20\d\d", token):
@@ -45,6 +46,8 @@ def _file_name_candidate(url: str | None) -> str | None:
         leading.append(token)
     leading = [t for t in leading if t.isalpha() and len(t) >= 2]
     if not leading or len(leading) != len(re.split(r"[-_\s]+", stem)[: len(leading)]):
+        return None
+    if all(t.lower() in GENERIC_NAME_WORDS for t in leading):
         return None
     return " ".join(LEGAL_CASE.get(t.lower(), t.capitalize()) for t in leading)
 

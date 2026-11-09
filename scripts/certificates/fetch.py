@@ -11,7 +11,7 @@ import posixpath
 import re
 import socket
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlencode, urljoin, urlsplit, urlunsplit
 
 import requests
 
@@ -143,17 +143,21 @@ def url_metadata(url: str) -> dict:
     kept = [(k, v) for k, v in pairs if not TRACKING.match(k)]
     canonical = urlunsplit((parts.scheme.lower(), parts.netloc.lower(), parts.path, urlencode(kept), ""))
 
-    segments = [s for s in parts.path.split("/") if s]
-    filename = posixpath.basename(parts.path)
+    path = unquote(parts.path)  # "Group%20ESG%20Report" -> "Group ESG Report"
+    segments = [s for s in path.split("/") if s]
+    filename = posixpath.basename(path)
     stem = re.sub(r"\.pdf$", "", filename, flags=re.I)
 
-    year_match = re.search(r"(?<!\d)(20\d{2})(?!\d)", stem) or re.search(r"(?<!\d)(20\d{2})(?!\d)", parts.path)
+    # a date stamped into the name (2024-12-17) is a publication date, not the reporting year
+    stamp = re.search(r"(?<!\d)(20\d{2})-(\d{2})-(\d{2})(?!\d)", stem)
+    undated = (stem[: stamp.start()] + " " + stem[stamp.end():]) if stamp else stem
+    year_match = re.search(r"(?<!\d)(20\d{2})(?!\d)", undated) or re.search(r"(?<!\d)(20\d{2})(?!\d)", path) or stamp
     language = next((s.lower() for s in reversed(segments[:-1]) if s.lower() in LANGUAGES), None)
     suffix = re.search(r"[-_]([a-z]{2})$", stem, re.I)
     if not language and suffix and suffix.group(1).lower() in LANGUAGES:
         language = suffix.group(1).lower()
 
-    slug = re.sub(r"(?<!\d)20\d{2}(?!\d)", " ", stem)
+    slug = re.sub(r"(?<!\d)20\d{2}(?!\d)", " ", undated)
     slug = re.sub(r"[-_]([a-z]{2})$", " ", slug, flags=re.I) if language else slug
     document_type = re.sub(r"[-_\s]+", " ", slug).strip() or None
 
@@ -164,6 +168,7 @@ def url_metadata(url: str) -> dict:
         "host": parts.hostname,
         "fileName": filename or None,
         "year": int(year_match.group(1)) if year_match else None,
+        "dateInName": f"{stamp.group(1)}-{stamp.group(2)}-{stamp.group(3)}" if stamp else None,
         "language": language,
         "documentType": document_type,
     }

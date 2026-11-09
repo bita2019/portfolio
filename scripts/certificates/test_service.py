@@ -195,3 +195,26 @@ def test_title_selection(tmp_path, meta, expected, source):
     d = extract_document(_titled_pdf(tmp_path / "t.pdf", meta))
     assert (d["title"], d["titleSource"]) == (expected, source)
     assert d["pdfTitle"] == meta
+
+
+def test_percent_encoded_name_with_stamped_date():
+    m = fetch.url_metadata("https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf")
+    assert m["fileName"] == "Group ESG Report 2023 2024-12-17.pdf"
+    assert (m["year"], m["dateInName"], m["documentType"]) == (2023, "2024-12-17", "Group ESG Report")
+
+
+def test_default_powerpoint_title_and_slide_bookmarks_are_ignored(tmp_path):
+    from report import extract_document
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((60, 60), "ANNUAL ESG REPORT 2023", fontsize=36)
+    page.insert_text((60, 120), "Board message", fontsize=12)
+    doc.new_page()
+    doc.set_metadata({"title": "PowerPoint Presentation"})
+    doc.set_toc([[1, "Slide 1", 1], [1, "Slide 2", 2]])
+    doc.save(tmp_path / "p.pdf")
+    d = extract_document(tmp_path / "p.pdf", "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023.pdf")
+    assert (d["title"], d["titleSource"], d["pdfTitle"]) == ("ANNUAL ESG REPORT 2023", "first-page-heading", "PowerPoint Presentation")
+    assert d["outline"] == []
+    assert all(c["name"] != "Group" for c in d["company"]["candidates"])
