@@ -119,8 +119,12 @@ def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
         headers = resp.headers
 
     with open(path, "rb") as f:
-        if f.read(5) != b"%PDF-":
-            raise FetchError("The URL did not return a PDF.", 415)
+        head = f.read(65536)
+    if not head.startswith(b"%PDF-"):
+        kind = (headers.get("Content-Type") or "unknown content type").split(";")[0]
+        title = re.search(rb"<title[^>]*>(.*?)</title>", head, re.S | re.I)
+        page = f' titled "{" ".join(title.group(1).decode("utf-8", "replace").split())[:80]}"' if title else ""
+        raise FetchError(f"The URL did not return a PDF (got {kind}{page}). The link may be broken or moved.", 415)
 
     return path, {
         "finalUrl": current,

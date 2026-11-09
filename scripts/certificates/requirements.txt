@@ -3,3 +3,4 @@ pymongo>=4.7
 sentence-transformers>=3
 flask>=3
 requests>=2.31
+fonttools>=4  # lets pypdf decode some embedded fonts

@@ -92,8 +92,9 @@ def test_redirects_are_followed(client, tmp_path, local_server):
 
 
 def test_non_pdf_and_missing_are_rejected(client, tmp_path, local_server):
-    (tmp_path / "page.pdf").write_text("<html>not a pdf</html>")
-    assert client.post("/extract", json={"url": f"{local_server}/page.pdf"}).status_code == 415
+    (tmp_path / "page.pdf").write_text("<html><head><title>Page Not Found</title></head></html>")
+    r = client.post("/extract", json={"url": f"{local_server}/page.pdf"})
+    assert r.status_code == 415 and 'titled "Page Not Found"' in r.get_json()["error"]
     assert client.post("/extract", json={"url": f"{local_server}/nope.pdf"}).status_code == 502
     (tmp_path / "bad.pdf").write_bytes(b"%PDF-1.4 garbage")
     assert client.post("/extract", json={"url": f"{local_server}/bad.pdf"}).status_code == 422
