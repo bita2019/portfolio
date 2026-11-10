@@ -4,7 +4,8 @@
     python document_urls.py examples/urls.txt examples/url-metadata
     -> examples/url-metadata.json, examples/url-metadata.md, examples/url-metadata.xlsx
 
-Each row has: company name, country, city, author or issuer, report title, start date, end date (plus notes).
+Each row has: company name, country, city, author or issuer, report title, reporting period, start date, end date (plus notes).
+Start and end dates are filled only when the report states them; nothing is inferred.
 """
 import json
 import sys
@@ -21,7 +22,8 @@ from summary import summarize
 
 FIELDS = [("companyName", "Company name"), ("country", "Country"), ("city", "City"),
           ("authorOrIssuer", "Author or issuer"), ("authorOrIssuerRole", "Author / issuer"),
-          ("reportTitle", "Title of report"), ("startDate", "Start date"), ("endDate", "End date")]
+          ("reportTitle", "Title of report"), ("reportingPeriod", "Reporting period"),
+          ("startDate", "Start date"), ("endDate", "End date")]
 FONT = "Arial"
 
 
@@ -43,18 +45,18 @@ def to_markdown(entries: list[dict]) -> str:
     read = sum(e["status"] == "read" for e in entries)
     out = ["# Report URLs and their metadata", "",
            f"Generated {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC by `document_urls.py`. {read} of {len(entries)} URLs were read.", "",
-           "| # | Company name | Country | City | Author or issuer | Title of report | Start date | End date |",
-           "|---|---|---|---|---|---|---|---|"]
+           "| # | Company name | Country | City | Author or issuer | Title of report | Reporting period | Start date | End date |",
+           "|---|---|---|---|---|---|---|---|---|"]
     for i, e in enumerate(entries, 1):
         who = f"{e['authorOrIssuer']} ({e['authorOrIssuerRole']})" if e["authorOrIssuer"] else None
         out.append("| " + " | ".join([str(i), _md(e["companyName"]), _md(e["country"]), _md(e["city"]), _md(who),
-                                       _md(e["reportTitle"]), _md(e["startDate"]), _md(e["endDate"])]) + " |")
+                                       _md(e["reportTitle"]), _md(e["reportingPeriod"]), _md(e["startDate"]), _md(e["endDate"])]) + " |")
     out += ["", "## URLs and notes", ""]
     for i, e in enumerate(entries, 1):
         out.append(f"{i}. `{e['url']}`")
         for note in e["notes"]:
             out.append(f"   - {note}")
-    out += ["", "A note means the value was inferred or could not be found; a row without notes was read directly from the report."]
+    out += ["", "Reporting period is the period as written in the report. Start and end dates are given only when the report states them; an empty date means it is not stated. A note explains anything missing."]
     return "\n".join(out) + "\n"
 
 
@@ -78,10 +80,10 @@ def to_xlsx(entries: list[dict], path: Path) -> None:
     for row in ws.iter_rows(min_row=2):
         for cell in row:
             cell.font = Font(name=FONT, size=10)
-            cell.alignment = Alignment(vertical="top", wrap_text=cell.column in (2, 4, 9, 12))
-            if cell.column in (10, 11) and cell.value:
+            cell.alignment = Alignment(vertical="top", wrap_text=cell.column in (2, 4, 9, 10, 13))
+            if cell.column in (11, 12) and cell.value:
                 cell.number_format = "yyyy-mm-dd"
-    for i, width in enumerate([5, 55, 10, 28, 16, 16, 28, 11, 38, 12, 12, 60], 1):
+    for i, width in enumerate([5, 55, 10, 28, 16, 16, 28, 11, 38, 26, 12, 12, 60], 1):
         ws.column_dimensions[get_column_letter(i)].width = width
     ws.freeze_panes = "A2"
     ws.auto_filter.ref = ws.dimensions
@@ -93,9 +95,10 @@ def to_xlsx(entries: list[dict], path: Path) -> None:
         ("URLs read", '=COUNTIF(Metadata!C2:C200,"read")'),
         ("URLs not read", '=COUNTIF(Metadata!C2:C200,"not read")'),
         ("Author / issuer", "'author' = the author named in the PDF; 'issuer' = the company (or, for certificates, the certification body) that published it."),
-        ("Start / end date", "Taken from the report when it states its period. Where it does not, the date is inferred (assumed calendar year, or end date stated and start assumed 12 months earlier) and the Notes column says so."),
+        ("Reporting period", "The period as written in the report (for example 'April 1, 2024 - March 31, 2025' or 'FY2023'). Empty if the report does not state one."),
+        ("Start / end date", "Filled only when the report states them. Nothing is inferred: an empty date means the report does not state it (for example, a report that gives only a year end has an end date and no start date)."),
         ("Country / city", "The company's base, from an address block or a 'headquartered in' sentence in the report; the web address or VAT prefix is used only as a fallback and is noted."),
-        ("Notes column", "Empty means every value was read directly from the report. A note flags anything inferred, uncertain or missing."),
+        ("Notes column", "Empty means every value was read directly from the report. A note flags anything uncertain or missing."),
     ]:
         notes.append([label, value])
     for row in notes.iter_rows():

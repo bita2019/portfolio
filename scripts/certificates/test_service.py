@@ -278,7 +278,7 @@ def test_default_response_is_the_short_record(client, tmp_path, local_server):
     make_pdf(tmp_path / "cert.pdf", TUV)
     body = client.post("/extract", json={"url": f"{local_server}/cert.pdf"}).get_json()
     assert set(body) == {"url", "status", "companyName", "country", "city", "authorOrIssuer", "authorOrIssuerRole",
-                         "reportTitle", "startDate", "endDate", "notes"}
+                         "reportTitle", "reportingPeriod", "startDate", "endDate", "notes"}
     assert body["companyName"] == "Acme Castings GmbH" and body["city"] == "Stadtallendorf" and body["country"] == "Germany"
     assert body["authorOrIssuer"] == "TUV SUD Management Service GmbH" and body["authorOrIssuerRole"] == "issuer"
     assert (body["startDate"], body["endDate"]) == ("2024-05-22", "2027-05-21")

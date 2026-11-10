@@ -193,13 +193,12 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
 
     company = detect_company(url, texts)
     scope = _scope(texts)
-    year_value = int(year.group(1)) if year else None
 
     return {
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "company": company,
         "location": detect_location(url, texts, company["name"], company["shortName"]),
-        "dates": report_dates(texts, (scope["statement"] or {}).get("text"), year_value),
+        "dates": report_dates(texts, (scope["statement"] or {}).get("text")),
         "scope": scope,
         "title": title,
         "titleSource": title_source,

@@ -1,6 +1,6 @@
-"""Start and end date of the reporting period, and how sure we are about them."""
+"""Start and end date of the reporting period, only when the report states them (nothing is inferred)."""
 import re
-from datetime import date, timedelta
+from datetime import date
 
 MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
 _M = "|".join(m.capitalize() for m in MONTHS)
@@ -11,7 +11,6 @@ RANGE = re.compile(
 )
 YEAR_TO = re.compile(rf"\b(?:year|period)\s+(?:to|ended|ending)\s+(?P<b>{_FULL})", re.I)
 CONTEXT = re.compile(r"period|reporting|fiscal|financial|year|covering|from|encompass", re.I)
-FY = re.compile(r"\b(?:(?:fiscal|financial|calendar) year\s+(?:ended?\s+)?|FY\s?)(\d{4})\b", re.I)
 
 
 def unbreak(text: str) -> str:
@@ -32,14 +31,7 @@ def _parse(token: str, year: int | None = None) -> date | None:
         return None
 
 
-def _year_before(end: date) -> date:
-    try:
-        return end.replace(year=end.year - 1) + timedelta(days=1)
-    except ValueError:  # 29 February
-        return date(end.year - 1, 2, 28) + timedelta(days=1)
-
-
-def report_dates(texts: list[str], scope_statement: str | None, reporting_year: int | None) -> dict:
+def report_dates(texts: list[str], scope_statement: str | None) -> dict:
     full = unbreak("\n".join(texts))
 
     def from_range(hay: str, need_context: bool):
@@ -59,19 +51,11 @@ def report_dates(texts: list[str], scope_statement: str | None, reporting_year: 
         return _result(*hit[:2], "stated", hit[2])
     if m := YEAR_TO.search(full):
         end = _parse(m["b"])
-        if end:
-            return _result(_year_before(end), end, "end date stated; start assumed to be 12 months earlier", m.group(0))
+        if end:  # only the end is stated; the start is left empty rather than guessed
+            return {"startDate": None, "endDate": end.isoformat(), "basis": "only the end date is stated", "text": " ".join(m.group(0).split())}
     if hit := from_range(full, True):
         return _result(*hit[:2], "stated", hit[2])
-    year = reporting_year
-    if m := FY.search(full):
-        year = int(m.group(1))
-        why = f"inferred from '{m.group(0)}' (assumed calendar year; the year end is not stated)"
-    else:
-        why = f"inferred from the reporting year {year} (assumed calendar year; the period is not stated)"
-    if year:
-        return _result(date(year, 1, 1), date(year, 12, 31), why, None)
-    return {"startDate": None, "endDate": None, "basis": "no reporting period found", "text": None}
+    return {"startDate": None, "endDate": None, "basis": "not stated in the report", "text": None}
 
 
 def _result(start: date, end: date, basis: str, text: str | None) -> dict:

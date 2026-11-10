@@ -8,10 +8,11 @@
     "authorOrIssuer": "Fonderie Ariotti SpA",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2024 Sustainability report",
-    "startDate": "2024-01-01",
-    "endDate": "2024-12-31",
+    "reportingPeriod": null,
+    "startDate": null,
+    "endDate": null,
     "notes": [
-      "dates: inferred from the reporting year 2024 (assumed calendar year; the period is not stated)"
+      "start and end date not stated in the report"
     ]
   },
   {
@@ -23,10 +24,11 @@
     "authorOrIssuer": "Castings PLC",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "Engineering a sustainable future 2024",
-    "startDate": "2023-04-01",
+    "reportingPeriod": null,
+    "startDate": null,
     "endDate": "2024-03-31",
     "notes": [
-      "dates: end date stated; start assumed to be 12 months earlier"
+      "start date not stated; end date from \"year to 31 March 2024\""
     ]
   },
   {
@@ -38,11 +40,12 @@
     "authorOrIssuer": "Stewart Wren",
     "authorOrIssuerRole": "author",
     "reportTitle": "ANNUAL ESG REPORT",
-    "startDate": "2023-01-01",
-    "endDate": "2023-12-31",
+    "reportingPeriod": "FY2023",
+    "startDate": null,
+    "endDate": null,
     "notes": [
       "author is the PDF's author field",
-      "dates: inferred from 'FY2023' (assumed calendar year; the year end is not stated)"
+      "start and end date not stated in the report"
     ]
   },
   {
@@ -54,6 +57,7 @@
     "authorOrIssuer": null,
     "authorOrIssuerRole": null,
     "reportTitle": null,
+    "reportingPeriod": null,
     "startDate": null,
     "endDate": null,
     "notes": [
@@ -69,6 +73,7 @@
     "authorOrIssuer": "Georg Fischer AG",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "03 Sustainability Statement 2024",
+    "reportingPeriod": "1 January to 31 December 2024",
     "startDate": "2024-01-01",
     "endDate": "2024-12-31",
     "notes": []
@@ -82,6 +87,7 @@
     "authorOrIssuer": "Waupaca Foundry",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "Sustainability Report 2024",
+    "reportingPeriod": "April 1, 2024 - March 31, 2025",
     "startDate": "2024-04-01",
     "endDate": "2025-03-31",
     "notes": []

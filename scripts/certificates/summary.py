@@ -27,7 +27,7 @@ def summarize(full: dict) -> dict:
         return {
             "companyName": org["name"], "country": country_of(org["country"]) or org["country"], "city": city,
             "authorOrIssuer": c["certificationBody"] or c["signedBy"], "authorOrIssuerRole": "issuer",
-            "reportTitle": title,
+            "reportTitle": title, "reportingPeriod": None,
             "startDate": c["validFrom"].date().isoformat() if c["validFrom"] else None,
             "endDate": c["validUntil"].date().isoformat() if c["validUntil"] else None,
             "notes": notes,
@@ -46,12 +46,15 @@ def summarize(full: dict) -> dict:
         notes.append("city not found")
     if role == "author":
         notes.append("author is the PDF's author field")
-    if dates["basis"] != "stated":
-        notes.append("dates: " + dates["basis"])
+    if dates["basis"] == "only the end date is stated":
+        notes.append(f"start date not stated; end date from \"{dates['text']}\"")
+    elif dates["basis"] != "stated":
+        notes.append("start and end date " + dates["basis"])
     if d["titleSource"] not in ("pdf-metadata", "first-page-heading"):
         notes.append(f"title taken from {d['titleSource']}")
     return {
         "companyName": company["name"], "country": loc["country"], "city": loc["city"],
         "authorOrIssuer": author, "authorOrIssuerRole": role, "reportTitle": d["title"],
+        "reportingPeriod": d["scope"]["reportingPeriod"],
         "startDate": dates["startDate"], "endDate": dates["endDate"], "notes": notes,
     }
