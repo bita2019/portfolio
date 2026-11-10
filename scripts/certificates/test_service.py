@@ -255,3 +255,20 @@ def test_scope_is_empty_when_the_report_says_nothing(tmp_path):
 
     s = extract_document(_scope_pdf(tmp_path / "n.pdf", with_section=False))["scope"]
     assert s == {"statement": None, "reportingPeriod": None, "reportedAgainst": [], "ghgScopeMentions": None}
+
+
+def test_basis_for_preparation_with_hyphenated_line_breaks(tmp_path):
+    from report import extract_document
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    for i, line in enumerate([
+        "Basis for preparation",
+        "This statement encompasses the period from 1 January to 31 De - cember 2024, aligning with the Annual Report",
+        "for the same year. The criteria for including companies align with financial reporting and are outlined below.",
+    ]):
+        page.insert_text((30, 60 + 16 * i), line, fontsize=7)
+    doc.save(tmp_path / "b.pdf")
+    s = extract_document(tmp_path / "b.pdf")["scope"]
+    assert s["statement"]["heading"] == "Basis for preparation" and "31 December 2024" in s["statement"]["text"]
+    assert s["reportingPeriod"] == "1 January to 31 December 2024"

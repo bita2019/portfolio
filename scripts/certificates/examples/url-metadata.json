@@ -1,7 +1,7 @@
 [
   {
     "url": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-    "fetchedAt": "2026-11-10T12:25:25+00:00",
+    "fetchedAt": "2026-11-10T12:36:35+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -88,7 +88,7 @@
   },
   {
     "url": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-    "fetchedAt": "2026-11-10T12:25:36+00:00",
+    "fetchedAt": "2026-11-10T12:36:47+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -211,7 +211,7 @@
   },
   {
     "url": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-    "fetchedAt": "2026-11-10T12:25:45+00:00",
+    "fetchedAt": "2026-11-10T12:36:55+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -317,7 +317,7 @@
   },
   {
     "url": "https://waupacafoundry.com/404?errorPath=/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf",
-    "fetchedAt": "2026-11-10T12:25:49+00:00",
+    "fetchedAt": "2026-11-10T12:36:59+00:00",
     "status": "failed",
     "httpStatus": 415,
     "error": "The URL did not return a PDF (got text/html titled \"Page Not Found\"). The link may be broken or moved.",
@@ -337,10 +337,8 @@
   },
   {
     "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
-    "fetchedAt": "2026-11-10T12:25:49+00:00",
-    "status": "failed",
-    "httpStatus": 502,
-    "error": "The network proxy refused or could not reach this host (check its egress allowlist).",
+    "fetchedAt": "2026-11-10T12:37:00+00:00",
+    "status": "ok",
     "metadata": {
       "source": {
         "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
@@ -353,13 +351,133 @@
         "year": 2024,
         "dateInName": null,
         "language": "en",
-        "documentType": "sustainability statement"
+        "documentType": "sustainability statement",
+        "finalUrl": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
+        "redirects": [],
+        "bytes": 6304826,
+        "contentType": "application/pdf",
+        "lastModified": "Mon, 16 Jun 2025 09:03:35 GMT",
+        "etag": "\"0x8DDACB4AD3057A0\""
+      },
+      "kind": "document",
+      "document": {
+        "sha256": "9151e1b2aff9cd2a24d168eec5a009d7e8e87bd4568444455c4bbb18ac758c65",
+        "company": {
+          "name": "Georg Fischer AG",
+          "shortName": "Georg Fischer",
+          "source": "content+url",
+          "confidence": "high",
+          "candidates": [
+            {
+              "name": "Georg Fischer AG",
+              "shortName": "Georg Fischer",
+              "source": "content+url",
+              "mentions": 19
+            },
+            {
+              "name": "Georgfischer",
+              "shortName": "Georgfischer",
+              "source": "url",
+              "mentions": null
+            },
+            {
+              "name": "GF Corporation",
+              "shortName": "GF",
+              "source": "content",
+              "mentions": 3
+            },
+            {
+              "name": "PricewaterhouseCoopers AG",
+              "shortName": "PricewaterhouseCoopers",
+              "source": "content",
+              "mentions": 3
+            },
+            {
+              "name": "Uponor Corporation",
+              "shortName": "Uponor",
+              "source": "content",
+              "mentions": 1
+            }
+          ]
+        },
+        "scope": {
+          "statement": {
+            "heading": "Basis for preparation",
+            "text": "This statement encompasses the period from 1 January to 31 December 2024, aligning with the Annual Report 2024 for the same year. Sustainability Reports from earlier periods can be accessed online on the GF website and within the Corporate Archives, dating back to 1997, which is recognized as the inaugural year of environmental reporting. The preparation of this statement is guided by the CSRD.",
+            "page": 53
+          },
+          "reportingPeriod": "1 January to 31 December 2024",
+          "reportedAgainst": [
+            {
+              "framework": "ESRS",
+              "basis": "in accordance with"
+            },
+            {
+              "framework": "GHG Protocol",
+              "basis": "in accordance with"
+            },
+            {
+              "framework": "GRI",
+              "basis": "with reference to"
+            }
+          ],
+          "ghgScopeMentions": {
+            "scope1": 43,
+            "scope2": 12,
+            "scope3": 48
+          }
+        },
+        "title": "03 Sustainability Statement 2024",
+        "titleSource": "pdf-metadata",
+        "pdfTitle": "03 Sustainability Statement 2024",
+        "author": null,
+        "creator": "Adobe InDesign 19.1 (Windows)",
+        "createdAt": "2025-02-25T19:14:58+00:00",
+        "pages": 108,
+        "pagesScanned": 108,
+        "reportingYear": 2024,
+        "outline": [],
+        "frameworks": {
+          "ESRS": 452,
+          "GRI": 72,
+          "SASB": 33,
+          "ISSB": 31,
+          "SBTi": 11,
+          "EU Taxonomy": 11,
+          "CSRD": 10,
+          "GHG Protocol": 9,
+          "TCFD": 7,
+          "UN Global Compact": 4,
+          "CDP": 3
+        },
+        "isoStandards": [
+          "ISO 14001",
+          "ISO 14001:2015",
+          "ISO 14955",
+          "ISO 45001",
+          "ISO 45001:2018",
+          "ISO 9001:2015"
+        ],
+        "firstPageText": "32\nAnnual Report 2024\nManagement Report\nSustainability \nStatement\nEditorial 33\nGeneral disclosures 34\nESRS 2 General disclosures 34\nEnvironment 49\nESRS E1 Climate change 50\nESRS E3 Water and marine resources 61\nESRS E5 Resource use and circular economy 64\nSocial  67\nESRS S1 Own workforce 68\nGovernance 78\nESRS G1 Business conduct 79\nDisclosure information:  \nReporting approach 83\nBasis for preparation 84\nTopic-specific IRO – 1 disclosures 87\nEnvironmental performance indicators 91\nSocial performance indicators 96\nGF’s policies 104\nDisclosure requirements in ESRS covered  \nby the undertaking’s sustainability statement 110\nIndependent practitioner’s limited assurance report 135\nContacts 139\n33\nAnnual Report 2024Sustainability Statement\nEditorial\nSustainability  \nis in GF’s DNA\nSince the company’s founding in 1802, one thing remained  \nunchanged: Sustainability is an integral part of GF’s identity.  \nThree decades ago, GF’s commitment was also reflected  \nin its decision to join the International Chamber of Commerce, \ncontributing to the foundation of what would later evolve into  \nthe Sustainable Development Goals (SDGs).\nGF’s unwavering dedication to corporate governance, the health \nand safety of employees, environmental stewardship, and ethical \npractices has consistently been a cornerstone of GF’s identity,  \ninfluencing all its endeavors.\nDriving sustainable change from its core business\nBecause GF’s business model is closely linked to sustainability, it \nis clear that the "
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "check": "title_found",
+            "ok": true
+          },
+          {
+            "check": "reporting_year_found",
+            "ok": true
+          }
+        ]
       }
     }
   },
   {
     "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
-    "fetchedAt": "2026-11-10T12:25:49+00:00",
+    "fetchedAt": "2026-11-10T12:37:13+00:00",
     "status": "ok",
     "metadata": {
       "source": {

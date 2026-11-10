@@ -28,16 +28,24 @@ FRAMEWORKS = {
 
 SCOPE_HEADING = re.compile(
     r"(report parameters|about (?:this|the) (?:report|sustainability report|statement)|scope of (?:this|the) (?:report|statement)"
-    r"|reporting (?:scope|boundar(?:y|ies))|basis of (?:preparation|reporting)|scope and boundar(?:y|ies))",
+    r"|reporting (?:scope|boundar(?:y|ies))|basis (?:of|for) (?:the )?(?:preparation|reporting)|scope and boundar(?:y|ies))",
     re.I,
 )
 _MONTH = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
 _ANY_DATE = rf"(?:{_MONTH}\s+\d{{1,2}},?\s+\d{{4}}|\d{{1,2}}\s+{_MONTH}\s+\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}})"
-PERIOD_RANGE = re.compile(rf"{_ANY_DATE}\s*(?:-|\u2013|\u2014|to|until)\s*{_ANY_DATE}", re.I)
-PERIOD_YEAR = re.compile(r"\b(?:(?:calendar|financial|fiscal|reporting) year (?:ended? )?\d{4}|FY\s?\d{2,4})\b", re.I)
+# the first date may omit its year: "1 January to 31 December 2024"
+PERIOD_RANGE = re.compile(
+    rf"(?:{_ANY_DATE}|\d{{1,2}}\s+{_MONTH}|{_MONTH}\s+\d{{1,2}})\s*(?:-|\u2013|\u2014|to|until|through)\s*{_ANY_DATE}", re.I
+)
+PERIOD_YEAR = re.compile(r"\b(?:(?:calendar|financial|fiscal) year (?:ended? )?\d{4}|FY\s?\d{2,4})\b", re.I)
 APPROACH = re.compile(
     r"\b(in accordance with|with reference to|based on|aligned with)\s+(?:the\s+)?(GRI|ESRS|TCFD|SASB|ISSB|CDP|GHG Protocol)\b", re.I
 )
+
+
+def _unbreak(text: str) -> str:
+    """Rejoin words split across lines by hyphenation ("De - cember" -> "December")."""
+    return re.sub(r"(?<=[A-Za-z]) - (?=[a-z])", "", " ".join(text.split()))
 
 
 def _scope_statement(pages: list[str]) -> dict | None:
@@ -51,7 +59,7 @@ def _scope_statement(pages: list[str]) -> dict | None:
             rest = [l for l in lines[i + 1:] if l]
             if rest and len(rest[0]) < 30 and rest[0].lower().startswith("and "):
                 rest = rest[1:]  # second line of a wrapped heading ("... and GRI Index")
-            body = " ".join(" ".join(rest).split())
+            body = _unbreak(" ".join(rest))
             page_numbers = sum(bool(re.search(r"\s\d{1,3}$", l)) for l in rest[:12])
             if re.search(r"\.{4,}|(?:\. ){4,}", body[:260]) or page_numbers >= 4:
                 continue  # a table of contents (dotted leaders / lines ending in page numbers), not the section itself
@@ -67,7 +75,7 @@ def _scope(pages: list[str]) -> dict:
     full = "\n".join(pages)
     statement = _scope_statement(pages)
     period = None
-    haystacks = ([statement["text"]] if statement else []) + [full]
+    haystacks = ([statement["text"]] if statement else []) + [_unbreak(full)]
     for hay in haystacks:
         m = PERIOD_RANGE.search(hay) or PERIOD_YEAR.search(hay)
         if m:

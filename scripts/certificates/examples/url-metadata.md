@@ -1,6 +1,6 @@
 # Report URLs and their extracted metadata
 
-Generated 2026-11-10 12:25 UTC by `document_urls.py`. 4 of 6 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
+Generated 2026-11-10 12:37 UTC by `document_urls.py`. 5 of 6 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
 
 | # | Company | Document | Year | Status |
 |---|---|---|---|---|
@@ -8,7 +8,7 @@ Generated 2026-11-10 12:25 UTC by `document_urls.py`. 4 of 6 URLs were downloade
 | 2 | Castings PLC | castings plc sustainability report interactive | 2024 | ✅ read |
 | 3 | MAT Foundry Group Limited | Group ESG Report | 2023 | ✅ read |
 | 4 | — | 404 | — | ⚠️ 415 |
-| 5 | — | sustainability statement | 2024 | ⚠️ 502 |
+| 5 | Georg Fischer AG | sustainability statement | 2024 | ✅ read |
 | 6 | Waupaca Foundry | WF Sustainability Report web FNL (1) | 2024 | ✅ read |
 
 ## 1. www.fonderieariotti.com
@@ -130,17 +130,34 @@ From the URL alone:
 
 `https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com`
 
-**Not read.** The network proxy refused or could not reach this host (check its egress allowlist).
-
-From the URL alone:
-
 | Field | Value |
 |---|---|
+| Company | Georg Fischer AG (high confidence, from content+url) |
+| Short name | Georg Fischer |
+| Title | 03 Sustainability Statement 2024 (from pdf-metadata) |
+| Reporting year | 2024 |
+| Date in file name | — |
+| Document type (from URL) | sustainability statement |
+| Language (from URL) | en |
 | Canonical URL | https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf |
 | Dropped tracking parameters | utm_source |
-| Document type | sustainability statement |
-| Year | 2024 |
-| Language | en |
+| Pages | 108 |
+| File size | 6.3 MB |
+| Last modified (server) | Mon, 16 Jun 2025 09:03:35 GMT |
+| PDF created | 2025-02-25 19:14:58+00:00 |
+| Created with | Adobe InDesign 19.1 (Windows) |
+| Author | — |
+| Scope statement | This statement encompasses the period from 1 January to 31 December 2024, aligning with the Annual Report 2024 for the same year. Sustainability Reports from earlier periods can be accessed online on the GF website and within the Corporate Archives, dating back to 1997, which is recognized as the inaugural year of environmental reporting. The preparation of this statement is guided by the CSRD. (p. 53, "Basis for preparation") |
+| Reporting period | 1 January to 31 December 2024 |
+| Reported against | ESRS (in accordance with), GHG Protocol (in accordance with), GRI (with reference to) |
+| GHG scope 1 / 2 / 3 mentions | 43 / 12 / 48 |
+| Frameworks mentioned | ESRS ×452, GRI ×72, SASB ×33, ISSB ×31, SBTi ×11, EU Taxonomy ×11, CSRD ×10, GHG Protocol ×9, TCFD ×7, UN Global Compact ×4, CDP ×3 |
+| ISO standards mentioned | ISO 14001, ISO 14001:2015, ISO 14955, ISO 45001, ISO 45001:2018, ISO 9001:2015 |
+| Outline | — |
+| SHA-256 | `9151e1b2aff9cd2a24d168eec5a009d7e8e87bd4568444455c4bbb18ac758c65` |
+| Validation | passed — title_found: ok, reporting_year_found: ok |
+
+Company candidates considered: Georg Fischer AG (content+url); Georgfischer (url); GF Corporation (content); PricewaterhouseCoopers AG (content); Uponor Corporation (content)
 
 ## 6. waupacafoundry.com
 
