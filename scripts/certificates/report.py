@@ -26,6 +26,68 @@ FRAMEWORKS = {
 }
 
 
+SCOPE_HEADING = re.compile(
+    r"(report parameters|about (?:this|the) (?:report|sustainability report|statement)|scope of (?:this|the) (?:report|statement)"
+    r"|reporting (?:scope|boundar(?:y|ies))|basis of (?:preparation|reporting)|scope and boundar(?:y|ies))",
+    re.I,
+)
+_MONTH = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
+_ANY_DATE = rf"(?:{_MONTH}\s+\d{{1,2}},?\s+\d{{4}}|\d{{1,2}}\s+{_MONTH}\s+\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}})"
+PERIOD_RANGE = re.compile(rf"{_ANY_DATE}\s*(?:-|\u2013|\u2014|to|until)\s*{_ANY_DATE}", re.I)
+PERIOD_YEAR = re.compile(r"\b(?:(?:calendar|financial|fiscal|reporting) year (?:ended? )?\d{4}|FY\s?\d{2,4})\b", re.I)
+APPROACH = re.compile(
+    r"\b(in accordance with|with reference to|based on|aligned with)\s+(?:the\s+)?(GRI|ESRS|TCFD|SASB|ISSB|CDP|GHG Protocol)\b", re.I
+)
+
+
+def _scope_statement(pages: list[str]) -> dict | None:
+    """The report's own description of what it covers, taken from a heading line such as "Report Parameters"."""
+    heading_line = re.compile(rf"^(?:{SCOPE_HEADING.pattern})(?:\s+and\s+[\w ]{{1,30}})?\s*$", re.I)
+    for number, page in enumerate(pages, 1):
+        lines = [l.strip() for l in page.splitlines()]
+        for i, line in enumerate(lines):
+            if not heading_line.match(line):
+                continue
+            rest = [l for l in lines[i + 1:] if l]
+            if rest and len(rest[0]) < 30 and rest[0].lower().startswith("and "):
+                rest = rest[1:]  # second line of a wrapped heading ("... and GRI Index")
+            body = " ".join(" ".join(rest).split())
+            page_numbers = sum(bool(re.search(r"\s\d{1,3}$", l)) for l in rest[:12])
+            if re.search(r"\.{4,}|(?:\. ){4,}", body[:260]) or page_numbers >= 4:
+                continue  # a table of contents (dotted leaders / lines ending in page numbers), not the section itself
+            if len(body) < 80:
+                continue
+            cut = body[:500]
+            end = cut.rfind(". ")
+            return {"heading": line, "text": (cut[: end + 1] if end > 120 else cut).strip(), "page": number}
+    return None
+
+
+def _scope(pages: list[str]) -> dict:
+    full = "\n".join(pages)
+    statement = _scope_statement(pages)
+    period = None
+    haystacks = ([statement["text"]] if statement else []) + [full]
+    for hay in haystacks:
+        m = PERIOD_RANGE.search(hay) or PERIOD_YEAR.search(hay)
+        if m:
+            period = " ".join(m.group(0).split())
+            break
+    approach, seen = [], set()
+    for m in APPROACH.finditer(full):
+        item = (m.group(2).upper() if m.group(2).lower() != "ghg protocol" else "GHG Protocol", m.group(1).lower())
+        if item not in seen:
+            seen.add(item)
+            approach.append({"framework": item[0], "basis": item[1]})
+    ghg = {f"scope{n}": len(re.findall(rf"Scope\s*{n}\b", full, re.I)) for n in (1, 2, 3)}
+    return {
+        "statement": statement,
+        "reportingPeriod": period,
+        "reportedAgainst": approach,
+        "ghgScopeMentions": ghg if any(ghg.values()) else None,
+    }
+
+
 def _outline_titles(outline, depth=0, out=None, limit=80) -> list[str]:
     out = [] if out is None else out
     for item in outline:
@@ -122,6 +184,7 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
     return {
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "company": detect_company(url, texts),
+        "scope": _scope(texts),
         "title": title,
         "titleSource": title_source,
         "pdfTitle": pdf_title,

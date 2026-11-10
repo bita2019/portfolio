@@ -1,6 +1,6 @@
 # Report URLs and their extracted metadata
 
-Generated 2026-11-10 12:06 UTC by `document_urls.py`. 4 of 6 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
+Generated 2026-11-10 12:14 UTC by `document_urls.py`. 4 of 6 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
 
 | # | Company | Document | Year | Status |
 |---|---|---|---|---|
@@ -32,6 +32,10 @@ Generated 2026-11-10 12:06 UTC by `document_urls.py`. 4 of 6 URLs were downloade
 | PDF created | 2025-09-29 17:44:17+02:00 |
 | Created with | Adobe InDesign 20.5 (Macintosh) |
 | Author | — |
+| Scope statement | none found in the report |
+| Reporting period | not stated |
+| Reported against | not stated |
+| GHG scope 1 / 2 / 3 mentions | none |
 | Frameworks mentioned | GRI ×1 |
 | ISO standards mentioned | ISO 14001, ISO 45001, ISO 50001, ISO 9001 |
 | Outline | — |
@@ -61,6 +65,10 @@ Company candidates considered: Fonderie Ariotti SpA (content+url); Fonderieariot
 | PDF created | 2024-11-11 11:25:38+00:00 |
 | Created with | Adobe InDesign 20.0 (Windows) |
 | Author | — |
+| Scope statement | none found in the report |
+| Reporting period | not stated |
+| Reported against | TCFD (based on) |
+| GHG scope 1 / 2 / 3 mentions | 7 / 6 / 6 |
 | Frameworks mentioned | TCFD ×6 |
 | ISO standards mentioned | ISO 14001 |
 | Outline | Contents; About Us; CEO Introduction; Sustainability Strategic Pillars; Product Journey; Our Business; The Road to Net Zero; Supply Chain; Our People; Environment … |
@@ -90,6 +98,10 @@ Company candidates considered: Castings PLC (content+url); Castings Ductile Ltd 
 | PDF created | 2024-12-17 13:21:33+00:00 |
 | Created with | Microsoft® PowerPoint® for Microsoft 365 |
 | Author | Stewart Wren |
+| Scope statement | none found in the report |
+| Reporting period | FY2023 |
+| Reported against | not stated |
+| GHG scope 1 / 2 / 3 mentions | 1 / 1 / 3 |
 | Frameworks mentioned | CSRD ×1, GRI ×1, SASB ×1 |
 | ISO standards mentioned | ISO 14001, ISO 27001, ISO 45001, ISO 50001, ISO 9001 |
 | Outline | — |
@@ -151,6 +163,10 @@ From the URL alone:
 | PDF created | 2026-03-26 16:42:03-05:00 |
 | Created with | Adobe InDesign 21.1 (Macintosh) |
 | Author | — |
+| Scope statement | TRC Environmental Corporation (TRC) was retained to assist WFI with the development of this sustainability report to ensure consistency with the Global Reporting Initiative (GRI) standards. WFI has reported the information cited in this GRI content index for the period [April 1, 2024 - March 31, 2025] with reference to the GRI Standards. (p. 45, "Report Parameters") |
+| Reporting period | April 1, 2024 - March 31, 2025 |
+| Reported against | GRI (with reference to) |
+| GHG scope 1 / 2 / 3 mentions | 11 / 7 / 2 |
 | Frameworks mentioned | GRI ×18, CDP ×11, SASB ×4 |
 | ISO standards mentioned | ISO 14001, ISO 14001:2015, ISO 45001:2018, ISO 50001, ISO 50001:2011, ISO 50001:2018, ISO 9001:2015 |
 | Outline | — |
@@ -161,6 +177,7 @@ Company candidates considered: Waupaca Foundry (content+url); Wf (file name); Co
 
 ## Notes
 
+- *Scope* is what the report itself says it covers (a heading such as "Report Parameters" or "About this report"), so it is empty when the report has no such section. *GHG scope mentions* count the words "Scope 1/2/3" and say nothing about what was measured.
 - *Frameworks* counts are plain word matches, so "GRI ×1" means the word appears once, not that the report follows GRI.
 - *Company* confidence is high when the report text and the URL agree, medium when only the text names it (3+ mentions), low when only the URL does.
 - Re-run `python document_urls.py examples/urls.txt examples/url-metadata` after editing `examples/urls.txt`.

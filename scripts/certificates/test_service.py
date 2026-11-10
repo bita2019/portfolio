@@ -218,3 +218,40 @@ def test_default_powerpoint_title_and_slide_bookmarks_are_ignored(tmp_path):
     assert (d["title"], d["titleSource"], d["pdfTitle"]) == ("ANNUAL ESG REPORT 2023", "first-page-heading", "PowerPoint Presentation")
     assert d["outline"] == []
     assert all(c["name"] != "Group" for c in d["company"]["candidates"])
+
+
+def _scope_pdf(path, with_section=True):
+    doc = pymupdf.open()
+    toc = doc.new_page()
+    for i, line in enumerate(["Contents", "About this report .................. 3", "Climate ........................ 5"]):
+        toc.insert_text((60, 60 + 18 * i), line, fontsize=11)
+    intro = doc.new_page()
+    intro.insert_text((60, 60), "For questions about this report, please email us at info@example.com and we will reply soon.", fontsize=9)
+    if with_section:
+        sec = doc.new_page()
+        for i, line in enumerate([
+            "About this report",
+            "This report covers Acme Foundry and its two UK sites for the period April 1, 2024 - March 31, 2025.",
+            "It was prepared with reference to the GRI Standards. Scope 1 and Scope 2 emissions are reported; Scope 3 is not.",
+        ]):
+            sec.insert_text((40, 60 + 18 * i), line, fontsize=7)
+    doc.save(path)
+    return path
+
+
+def test_scope_statement_period_framework_and_ghg(tmp_path):
+    from report import extract_document
+
+    s = extract_document(_scope_pdf(tmp_path / "s.pdf"))["scope"]
+    assert s["statement"]["page"] == 3 and s["statement"]["heading"] == "About this report"
+    assert s["statement"]["text"].startswith("This report covers Acme Foundry")
+    assert s["reportingPeriod"] == "April 1, 2024 - March 31, 2025"
+    assert s["reportedAgainst"] == [{"framework": "GRI", "basis": "with reference to"}]
+    assert s["ghgScopeMentions"] == {"scope1": 1, "scope2": 1, "scope3": 1}
+
+
+def test_scope_is_empty_when_the_report_says_nothing(tmp_path):
+    from report import extract_document
+
+    s = extract_document(_scope_pdf(tmp_path / "n.pdf", with_section=False))["scope"]
+    assert s == {"statement": None, "reportingPeriod": None, "reportedAgainst": [], "ghgScopeMentions": None}

@@ -1,7 +1,7 @@
 [
   {
     "url": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-    "fetchedAt": "2026-11-10T12:06:00+00:00",
+    "fetchedAt": "2026-11-10T12:14:13+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -44,6 +44,12 @@
             }
           ]
         },
+        "scope": {
+          "statement": null,
+          "reportingPeriod": null,
+          "reportedAgainst": [],
+          "ghgScopeMentions": null
+        },
         "title": "2024 Sustainability report",
         "titleSource": "first-page-heading",
         "pdfTitle": null,
@@ -82,7 +88,7 @@
   },
   {
     "url": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-    "fetchedAt": "2026-11-10T12:06:12+00:00",
+    "fetchedAt": "2026-11-10T12:14:25+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -143,6 +149,21 @@
             }
           ]
         },
+        "scope": {
+          "statement": null,
+          "reportingPeriod": null,
+          "reportedAgainst": [
+            {
+              "framework": "TCFD",
+              "basis": "based on"
+            }
+          ],
+          "ghgScopeMentions": {
+            "scope1": 7,
+            "scope2": 6,
+            "scope3": 6
+          }
+        },
         "title": "Engineering a sustainable future 2024",
         "titleSource": "first-page-heading",
         "pdfTitle": null,
@@ -190,7 +211,7 @@
   },
   {
     "url": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-    "fetchedAt": "2026-11-10T12:06:20+00:00",
+    "fetchedAt": "2026-11-10T12:14:34+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -245,6 +266,16 @@
             }
           ]
         },
+        "scope": {
+          "statement": null,
+          "reportingPeriod": "FY2023",
+          "reportedAgainst": [],
+          "ghgScopeMentions": {
+            "scope1": 1,
+            "scope2": 1,
+            "scope3": 3
+          }
+        },
         "title": "ANNUAL ESG REPORT",
         "titleSource": "first-page-heading",
         "pdfTitle": "PowerPoint Presentation",
@@ -286,7 +317,7 @@
   },
   {
     "url": "https://waupacafoundry.com/404?errorPath=/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf",
-    "fetchedAt": "2026-11-10T12:06:24+00:00",
+    "fetchedAt": "2026-11-10T12:14:37+00:00",
     "status": "failed",
     "httpStatus": 415,
     "error": "The URL did not return a PDF (got text/html titled \"Page Not Found\"). The link may be broken or moved.",
@@ -306,7 +337,7 @@
   },
   {
     "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
-    "fetchedAt": "2026-11-10T12:06:26+00:00",
+    "fetchedAt": "2026-11-10T12:14:38+00:00",
     "status": "failed",
     "httpStatus": 502,
     "error": "The network proxy refused or could not reach this host (check its egress allowlist).",
@@ -328,7 +359,7 @@
   },
   {
     "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
-    "fetchedAt": "2026-11-10T12:06:26+00:00",
+    "fetchedAt": "2026-11-10T12:14:38+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -388,6 +419,25 @@
               "mentions": 1
             }
           ]
+        },
+        "scope": {
+          "statement": {
+            "heading": "Report Parameters",
+            "text": "TRC Environmental Corporation (TRC) was retained to assist WFI with the development of this sustainability report to ensure consistency with the Global Reporting Initiative (GRI) standards. WFI has reported the information cited in this GRI content index for the period [April 1, 2024 - March 31, 2025] with reference to the GRI Standards.",
+            "page": 45
+          },
+          "reportingPeriod": "April 1, 2024 - March 31, 2025",
+          "reportedAgainst": [
+            {
+              "framework": "GRI",
+              "basis": "with reference to"
+            }
+          ],
+          "ghgScopeMentions": {
+            "scope1": 11,
+            "scope2": 7,
+            "scope3": 2
+          }
         },
         "title": "Sustainability Report 2024",
         "titleSource": "first-page-heading",
