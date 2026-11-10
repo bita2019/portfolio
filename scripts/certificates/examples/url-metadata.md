@@ -1,6 +1,6 @@
 # Report URLs and their metadata
 
-Generated 2026-11-10 21:42 UTC by `document_urls.py`. 5 of 6 URLs were read.
+Generated 2026-11-10 21:52 UTC by `document_urls.py`. 5 of 6 URLs were read.
 
 | # | Company name | Country | City | Author or issuer | Title of report | Start date | End date |
 |---|---|---|---|---|---|---|---|
