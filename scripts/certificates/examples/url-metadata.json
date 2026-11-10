@@ -1,7 +1,7 @@
 [
   {
     "url": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-    "fetchedAt": "2026-11-10T12:14:13+00:00",
+    "fetchedAt": "2026-11-10T12:25:25+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -88,7 +88,7 @@
   },
   {
     "url": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-    "fetchedAt": "2026-11-10T12:14:25+00:00",
+    "fetchedAt": "2026-11-10T12:25:36+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -211,7 +211,7 @@
   },
   {
     "url": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-    "fetchedAt": "2026-11-10T12:14:34+00:00",
+    "fetchedAt": "2026-11-10T12:25:45+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -317,7 +317,7 @@
   },
   {
     "url": "https://waupacafoundry.com/404?errorPath=/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf",
-    "fetchedAt": "2026-11-10T12:14:37+00:00",
+    "fetchedAt": "2026-11-10T12:25:49+00:00",
     "status": "failed",
     "httpStatus": 415,
     "error": "The URL did not return a PDF (got text/html titled \"Page Not Found\"). The link may be broken or moved.",
@@ -337,7 +337,7 @@
   },
   {
     "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
-    "fetchedAt": "2026-11-10T12:14:38+00:00",
+    "fetchedAt": "2026-11-10T12:25:49+00:00",
     "status": "failed",
     "httpStatus": 502,
     "error": "The network proxy refused or could not reach this host (check its egress allowlist).",
@@ -359,7 +359,7 @@
   },
   {
     "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
-    "fetchedAt": "2026-11-10T12:14:38+00:00",
+    "fetchedAt": "2026-11-10T12:25:49+00:00",
     "status": "ok",
     "metadata": {
       "source": {

@@ -1,6 +1,6 @@
 # Report URLs and their extracted metadata
 
-Generated 2026-11-10 12:14 UTC by `document_urls.py`. 4 of 6 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
+Generated 2026-11-10 12:25 UTC by `document_urls.py`. 4 of 6 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
 
 | # | Company | Document | Year | Status |
 |---|---|---|---|---|
