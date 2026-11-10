@@ -5,7 +5,8 @@
     python service.py                     # http://127.0.0.1:8000
 
     curl -X POST localhost:8000/extract -H 'content-type: application/json' \
-         -d '{"url": "https://example.com/cert.pdf"}'
+         -d '{"url": "https://example.com/cert.pdf"}'          # short record
+    curl -X POST 'localhost:8000/extract?detail=full' ...        # everything the extractor found
 
 Env: ALLOWED_HOSTS (comma list, recommended), SERVICE_API_KEY (require X-API-Key), MAX_PDF_MB, PORT.
 """
@@ -20,6 +21,7 @@ from flask import Flask, jsonify, request
 from extract import extract_certificate
 from fetch import FetchError, download, url_metadata, check_url
 from report import extract_document
+from summary import summarize
 
 app = Flask(__name__)
 app.json.sort_keys = False
@@ -98,7 +100,10 @@ def extract():
         return jsonify(error='Send JSON like {"url": "https://…/file.pdf"}.'), 400
     try:
         check_url(url.strip())  # fail fast, before any network work
-        return jsonify(process(url.strip()))
+        result = process(url.strip())
+        if request.args.get("detail") == "full":  # everything the extractor found, not just the short record
+            return jsonify({"url": url.strip(), "status": "read", "metadata": summarize(result), **result})
+        return jsonify({"url": url.strip(), "status": "read", **summarize(result)})
     except FetchError as error:
         return jsonify(error=str(error)), error.status
 

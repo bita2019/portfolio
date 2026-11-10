@@ -42,7 +42,7 @@ def local_server(tmp_path, monkeypatch):
 
 def test_certificate_url_end_to_end(client, tmp_path, local_server):
     make_pdf(tmp_path / "cert.pdf", TUV)
-    r = client.post("/extract", json={"url": f"{local_server}/cert.pdf?utm_source=chatgpt.com"})
+    r = client.post("/extract?detail=full", json={"url": f"{local_server}/cert.pdf?utm_source=chatgpt.com"})
     body = r.get_json()
     assert r.status_code == 200
     assert body["kind"] == "certificate"
@@ -74,7 +74,7 @@ def test_report_url_returns_document_metadata(client, tmp_path, local_server):
         page.insert_text((60, 80), "Sustainability Statement 2024" if i == 0 else f"Chapter {i}: ESRS E1 climate, GRI 305", fontsize=12)
     doc.set_toc([[1, "Climate", 2], [1, "Water", 3]])
     doc.save(tmp_path / "sustainability-statement-2024-en.pdf")
-    r = client.post("/extract", json={"url": f"{local_server}/sustainability-statement-2024-en.pdf"})
+    r = client.post("/extract?detail=full", json={"url": f"{local_server}/sustainability-statement-2024-en.pdf"})
     body = r.get_json()
     assert r.status_code == 200 and body["kind"] == "document" and "certificate" not in body
     assert body["source"]["year"] == 2024 and body["source"]["language"] == "en"
@@ -87,23 +87,23 @@ def test_report_url_returns_document_metadata(client, tmp_path, local_server):
 
 def test_redirects_are_followed(client, tmp_path, local_server):
     make_pdf(tmp_path / "cert.pdf", TUV)
-    body = client.post("/extract", json={"url": f"{local_server}/redirect"}).get_json()
+    body = client.post("/extract?detail=full", json={"url": f"{local_server}/redirect"}).get_json()
     assert body["source"]["redirects"] == [f"{local_server}/redirect"] and body["kind"] == "certificate"
 
 
 def test_non_pdf_and_missing_are_rejected(client, tmp_path, local_server):
     (tmp_path / "page.pdf").write_text("<html><head><title>Page Not Found</title></head></html>")
-    r = client.post("/extract", json={"url": f"{local_server}/page.pdf"})
+    r = client.post("/extract?detail=full", json={"url": f"{local_server}/page.pdf"})
     assert r.status_code == 415 and 'titled "Page Not Found"' in r.get_json()["error"]
-    assert client.post("/extract", json={"url": f"{local_server}/nope.pdf"}).status_code == 502
+    assert client.post("/extract?detail=full", json={"url": f"{local_server}/nope.pdf"}).status_code == 502
     (tmp_path / "bad.pdf").write_bytes(b"%PDF-1.4 garbage")
-    assert client.post("/extract", json={"url": f"{local_server}/bad.pdf"}).status_code == 422
+    assert client.post("/extract?detail=full", json={"url": f"{local_server}/bad.pdf"}).status_code == 422
 
 
 def test_size_limit(client, tmp_path, local_server, monkeypatch):
     make_pdf(tmp_path / "cert.pdf", TUV)
     monkeypatch.setattr(fetch, "MAX_BYTES", 100)
-    assert client.post("/extract", json={"url": f"{local_server}/cert.pdf"}).status_code == 413
+    assert client.post("/extract?detail=full", json={"url": f"{local_server}/cert.pdf"}).status_code == 413
 
 
 @pytest.mark.parametrize("url", [
@@ -111,7 +111,7 @@ def test_size_limit(client, tmp_path, local_server, monkeypatch):
     "http://10.0.0.5/a.pdf", "http://[::1]/a.pdf", "http://192.168.1.1/a.pdf",
 ])
 def test_private_addresses_are_blocked(client, url):
-    assert client.post("/extract", json={"url": url}).status_code == 403
+    assert client.post("/extract?detail=full", json={"url": url}).status_code == 403
 
 
 @pytest.mark.parametrize("url,status", [
@@ -119,11 +119,11 @@ def test_private_addresses_are_blocked(client, url):
     ("https://example.com:8443/a.pdf", 403),
 ])
 def test_bad_urls(client, url, status):
-    assert client.post("/extract", json={"url": url}).status_code == status
+    assert client.post("/extract?detail=full", json={"url": url}).status_code == status
 
 
 def test_bad_request_body(client):
-    assert client.post("/extract", json={}).status_code == 400
+    assert client.post("/extract?detail=full", json={}).status_code == 400
     assert client.post("/extract", data="x").status_code == 400
 
 
@@ -137,7 +137,7 @@ def test_redirect_to_private_address_is_blocked(client):
 
     with mock.patch("fetch.socket.getaddrinfo", side_effect=resolve), \
          mock.patch("fetch.requests.Session.get", return_value=redirect):
-        r = client.post("/extract", json={"url": "https://public.example/a.pdf"})
+        r = client.post("/extract?detail=full", json={"url": "https://public.example/a.pdf"})
     assert r.status_code == 403
 
 
@@ -145,17 +145,17 @@ def test_allowed_hosts(client, monkeypatch):
     for var in ("HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy"):
         monkeypatch.delenv(var, raising=False)  # no proxy: names are resolved locally
     monkeypatch.setenv("ALLOWED_HOSTS", "georgfischer.com")
-    assert client.post("/extract", json={"url": "https://evil.example/a.pdf"}).status_code == 403
+    assert client.post("/extract?detail=full", json={"url": "https://evil.example/a.pdf"}).status_code == 403
     with mock.patch("fetch.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("127.0.0.1", 443))]):
         # allowed host name, but it resolves to loopback: still refused
-        assert client.post("/extract", json={"url": "https://www.georgfischer.com/a.pdf"}).status_code == 403
+        assert client.post("/extract?detail=full", json={"url": "https://www.georgfischer.com/a.pdf"}).status_code == 403
 
 
 def test_api_key(client, monkeypatch):
     monkeypatch.setenv("SERVICE_API_KEY", "secret")
     assert client.get("/health").status_code == 200
-    assert client.post("/extract", json={"url": "https://x.example/a.pdf"}).status_code == 401
-    assert client.post("/extract", json={"url": "file:///x"}, headers={"X-API-Key": "secret"}).status_code == 400
+    assert client.post("/extract?detail=full", json={"url": "https://x.example/a.pdf"}).status_code == 401
+    assert client.post("/extract?detail=full", json={"url": "file:///x"}, headers={"X-API-Key": "secret"}).status_code == 400
 
 
 def test_proxied_environment_skips_local_dns_but_still_blocks_literals(monkeypatch):
@@ -272,3 +272,14 @@ def test_basis_for_preparation_with_hyphenated_line_breaks(tmp_path):
     s = extract_document(tmp_path / "b.pdf")["scope"]
     assert s["statement"]["heading"] == "Basis for preparation" and "31 December 2024" in s["statement"]["text"]
     assert s["reportingPeriod"] == "1 January to 31 December 2024"
+
+
+def test_default_response_is_the_short_record(client, tmp_path, local_server):
+    make_pdf(tmp_path / "cert.pdf", TUV)
+    body = client.post("/extract", json={"url": f"{local_server}/cert.pdf"}).get_json()
+    assert set(body) == {"url", "status", "companyName", "country", "city", "authorOrIssuer", "authorOrIssuerRole",
+                         "reportTitle", "startDate", "endDate", "notes"}
+    assert body["companyName"] == "Acme Castings GmbH" and body["city"] == "Stadtallendorf" and body["country"] == "Germany"
+    assert body["authorOrIssuer"] == "TUV SUD Management Service GmbH" and body["authorOrIssuerRole"] == "issuer"
+    assert (body["startDate"], body["endDate"]) == ("2024-05-22", "2027-05-21")
+    assert body["reportTitle"] == "DIN EN ISO 9001:2015 certificate"

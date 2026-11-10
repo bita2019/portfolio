@@ -1,601 +1,89 @@
 [
   {
     "url": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-    "fetchedAt": "2026-11-10T12:36:35+00:00",
-    "status": "ok",
-    "metadata": {
-      "source": {
-        "url": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-        "canonicalUrl": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-        "strippedParameters": [],
-        "host": "www.fonderieariotti.com",
-        "fileName": "Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-        "year": 2024,
-        "dateInName": null,
-        "language": null,
-        "documentType": "Doc 04 03 EN Report sostenibilita",
-        "finalUrl": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-        "redirects": [],
-        "bytes": 8563694,
-        "contentType": "application/pdf",
-        "lastModified": "Mon, 29 Sep 2025 15:46:06 GMT",
-        "etag": "\"82abee-63ff2889bf819\""
-      },
-      "kind": "document",
-      "document": {
-        "sha256": "ddd515d16e4e581b7da6b1de6f076846ed7591725739a98cfe3e896bc69285ac",
-        "company": {
-          "name": "Fonderie Ariotti SpA",
-          "shortName": "Fonderie Ariotti",
-          "source": "content+url",
-          "confidence": "high",
-          "candidates": [
-            {
-              "name": "Fonderie Ariotti SpA",
-              "shortName": "Fonderie Ariotti",
-              "source": "content+url",
-              "mentions": 1
-            },
-            {
-              "name": "Fonderieariotti",
-              "shortName": "Fonderieariotti",
-              "source": "url",
-              "mentions": null
-            }
-          ]
-        },
-        "scope": {
-          "statement": null,
-          "reportingPeriod": null,
-          "reportedAgainst": [],
-          "ghgScopeMentions": null
-        },
-        "title": "2024 Sustainability report",
-        "titleSource": "first-page-heading",
-        "pdfTitle": null,
-        "author": null,
-        "creator": "Adobe InDesign 20.5 (Macintosh)",
-        "createdAt": "2025-09-29T17:44:17+02:00",
-        "pages": 20,
-        "pagesScanned": 20,
-        "reportingYear": 2024,
-        "outline": [],
-        "frameworks": {
-          "GRI": 1
-        },
-        "isoStandards": [
-          "ISO 14001",
-          "ISO 45001",
-          "ISO 50001",
-          "ISO 9001"
-        ],
-        "firstPageText": "2024 Sustainability report\nA Greener Future in every Casting\nWe have been making foundry castings for \n114 years, increasingly dedicated to serving \nthe European mechanical industry.\nDear stakeholders, interested and involved in our activities in various ways,\nWe present to you our third Sustainability Report for 2024, through which we sha-\nre our company’s progress and commitments regarding economic, environmen-\ntal, and social sustainability. This third edition is enriched by a double materiality \nanalysis, through which we have included your perspectives in our evaluations, \nbringing us even closer to the GRI (Global Reporting Initiative) guidelines, to whi-\nch we are not yet obligated due to our status as an SME.\nOur company has its roots in the early 1900s and has always been guided by the \nAriotti family, now in its fourth generation. We are deeply embedded in our local \narea and in the industrial culture of both Italy and Europe.\nThe commitment and values that guide us are respect, sustainable growth, enhan-\ncing the local area, the dignity of work and skills.\nWe present, without hesitation, a difficult report, representative of an extremely \ncomplex period, where the consequences of the ongoing geopolitical crisis have \ndeepened, impacting our management, which remains steadfast in its long-term \nvision, trust in the continuity of our business, and the belief that we are an essen-\ntial link in European manufacturing.\nReduced production volumes have led to downsized su"
-      },
-      "validation": {
-        "passed": true,
-        "checks": [
-          {
-            "check": "title_found",
-            "ok": true
-          },
-          {
-            "check": "reporting_year_found",
-            "ok": true
-          }
-        ]
-      }
-    }
+    "status": "read",
+    "companyName": "Fonderie Ariotti SpA",
+    "country": "Italy",
+    "city": "Adro",
+    "authorOrIssuer": "Fonderie Ariotti SpA",
+    "authorOrIssuerRole": "issuer",
+    "reportTitle": "2024 Sustainability report",
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31",
+    "notes": [
+      "dates: inferred from the reporting year 2024 (assumed calendar year; the period is not stated)"
+    ]
   },
   {
     "url": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-    "fetchedAt": "2026-11-10T12:36:47+00:00",
-    "status": "ok",
-    "metadata": {
-      "source": {
-        "url": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-        "canonicalUrl": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-        "strippedParameters": [],
-        "host": "castings.plc.uk",
-        "fileName": "castings-plc-sustainability-report-2024-interactive.pdf",
-        "year": 2024,
-        "dateInName": null,
-        "language": null,
-        "documentType": "castings plc sustainability report interactive",
-        "finalUrl": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-        "redirects": [],
-        "bytes": 6368768,
-        "contentType": "application/pdf",
-        "lastModified": "Tue, 12 Nov 2024 10:36:50 GMT",
-        "etag": "\"1db34eec8632300\""
-      },
-      "kind": "document",
-      "document": {
-        "sha256": "7fa8edd4aff81450cd2d7ec1ff8805f1ad97d320b2b055a442cba3de864c07ff",
-        "company": {
-          "name": "Castings PLC",
-          "shortName": "Castings",
-          "source": "content+url",
-          "confidence": "high",
-          "candidates": [
-            {
-              "name": "Castings PLC",
-              "shortName": "Castings",
-              "source": "content+url",
-              "mentions": 17
-            },
-            {
-              "name": "Castings Ductile Ltd",
-              "shortName": "Castings Ductile",
-              "source": "content+url",
-              "mentions": 1
-            },
-            {
-              "name": "Castings",
-              "shortName": "Castings",
-              "source": "url",
-              "mentions": null
-            },
-            {
-              "name": "West Midlands William Lee Ltd",
-              "shortName": "West Midlands William Lee",
-              "source": "content",
-              "mentions": 3
-            },
-            {
-              "name": "Lincolnshire CNC Speedwell Ltd",
-              "shortName": "Lincolnshire CNC Speedwell",
-              "source": "content",
-              "mentions": 3
-            }
-          ]
-        },
-        "scope": {
-          "statement": null,
-          "reportingPeriod": null,
-          "reportedAgainst": [
-            {
-              "framework": "TCFD",
-              "basis": "based on"
-            }
-          ],
-          "ghgScopeMentions": {
-            "scope1": 7,
-            "scope2": 6,
-            "scope3": 6
-          }
-        },
-        "title": "Engineering a sustainable future 2024",
-        "titleSource": "first-page-heading",
-        "pdfTitle": null,
-        "author": null,
-        "creator": "Adobe InDesign 20.0 (Windows)",
-        "createdAt": "2024-11-11T11:25:38+00:00",
-        "pages": 15,
-        "pagesScanned": 15,
-        "reportingYear": 2024,
-        "outline": [
-          "Contents",
-          "About Us",
-          "CEO Introduction",
-          "Sustainability Strategic Pillars",
-          "Product Journey",
-          "Our Business",
-          "The Road to Net Zero",
-          "Supply Chain",
-          "Our People",
-          "Environment",
-          "TCFD"
-        ],
-        "frameworks": {
-          "TCFD": 6
-        },
-        "isoStandards": [
-          "ISO 14001"
-        ],
-        "firstPageText": "Engineering \na sustainable \nfuture 2024\nRevenue\n£224.4m\nProfit before tax\n£21.3m\n% electricity supported \nby renewable contracts\n100%\nCommercial vehicle\n80%\nof revenue\nContents \nIntroduction\nAbout us 01\nOur approach to sustainability\nMessage from CEO 02\nSustainability strategic pillars 03\nProduct journey 04\nPerformance\nOur business 06\nCase study 07\nRoad to net zero 08\nSupply chain & circular economy 10\nOur people 12\nHear from our people 14\nEnvironment 16\nEnvironmental activities 20\nGovernance\nTask force on climate  \nrelated disclosures 22\nFrom a  \ntraditional past…\nWith a rich history beginning during the industrial revolution \nof the 1800s, we are today a market leading iron casting \nand machining group.\nThe group now consists of three iron foundries, following the \nacquisition of Castings Ductile in June 2024. These are:\nCastings PLC – Brownhills, West Midlands\nWilliam Lee Ltd – Dronfield, Derbyshire\nCastings Ductile – Scunthorpe, Lincolnshire\nCNC Speedwell Ltd is the group’s heavily invested CNC \nmachining business and is also based in Brownhills.\nResults relating to Castings Ductile are not included within \nthis report as it was not a part of the group during the year \nto 31 March 2024.\n…To a  \nsustainable future\nCastings Group is a well established and highly invested \nsupplier to the leading OEMs in the commercial vehicle \nsector. The group also has an important and diverse \ncustomer base in the power generation, agricultural and \ncapital goods sectors.\nOur continued st"
-      },
-      "validation": {
-        "passed": true,
-        "checks": [
-          {
-            "check": "title_found",
-            "ok": true
-          },
-          {
-            "check": "reporting_year_found",
-            "ok": true
-          }
-        ]
-      }
-    }
+    "status": "read",
+    "companyName": "Castings PLC",
+    "country": "United Kingdom",
+    "city": "Brownhills",
+    "authorOrIssuer": "Castings PLC",
+    "authorOrIssuerRole": "issuer",
+    "reportTitle": "Engineering a sustainable future 2024",
+    "startDate": "2023-04-01",
+    "endDate": "2024-03-31",
+    "notes": [
+      "dates: end date stated; start assumed to be 12 months earlier"
+    ]
   },
   {
     "url": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-    "fetchedAt": "2026-11-10T12:36:55+00:00",
-    "status": "ok",
-    "metadata": {
-      "source": {
-        "url": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-        "canonicalUrl": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-        "strippedParameters": [],
-        "host": "www.matfoundrygroup.com",
-        "fileName": "Group ESG Report 2023 2024-12-17.pdf",
-        "year": 2023,
-        "dateInName": "2024-12-17",
-        "language": null,
-        "documentType": "Group ESG Report",
-        "finalUrl": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-        "redirects": [],
-        "bytes": 3609153,
-        "contentType": "application/pdf",
-        "lastModified": "Mon, 06 Jan 2025 09:24:08 GMT",
-        "etag": "\"371241-62b0630c2adcc\""
-      },
-      "kind": "document",
-      "document": {
-        "sha256": "f6dd6a643ae125aa5912ae0a41578078e1572323c738b5705576547db8ee26b8",
-        "company": {
-          "name": "MAT Foundry Group Limited",
-          "shortName": "MAT Foundry Group",
-          "source": "content+url",
-          "confidence": "high",
-          "candidates": [
-            {
-              "name": "MAT Foundry Group Limited",
-              "shortName": "MAT Foundry Group",
-              "source": "content+url",
-              "mentions": 1
-            },
-            {
-              "name": "Matfoundrygroup",
-              "shortName": "Matfoundrygroup",
-              "source": "url",
-              "mentions": null
-            },
-            {
-              "name": "MAT Foundries Europe GmbH",
-              "shortName": "MAT Foundries Europe",
-              "source": "content",
-              "mentions": 1
-            },
-            {
-              "name": "EURAC Poole Ltd",
-              "shortName": "EURAC Poole",
-              "source": "content",
-              "mentions": 1
-            }
-          ]
-        },
-        "scope": {
-          "statement": null,
-          "reportingPeriod": "FY2023",
-          "reportedAgainst": [],
-          "ghgScopeMentions": {
-            "scope1": 1,
-            "scope2": 1,
-            "scope3": 3
-          }
-        },
-        "title": "ANNUAL ESG REPORT",
-        "titleSource": "first-page-heading",
-        "pdfTitle": "PowerPoint Presentation",
-        "author": "Stewart Wren",
-        "creator": "Microsoft® PowerPoint® for Microsoft 365",
-        "createdAt": "2024-12-17T13:21:33+00:00",
-        "pages": 29,
-        "pagesScanned": 29,
-        "reportingYear": 2023,
-        "outline": [],
-        "frameworks": {
-          "CSRD": 1,
-          "GRI": 1,
-          "SASB": 1
-        },
-        "isoStandards": [
-          "ISO 14001",
-          "ISO 27001",
-          "ISO 45001",
-          "ISO 50001",
-          "ISO 9001"
-        ],
-        "firstPageText": "ANNUAL\nESG REPORT\n2023\nMAT Foundry Group\n\nBoard Message 3\nMFG 2023 – ESG Report 2 \nForeword 4\nCorporate Structure 5\nProduct Portfolio 7\nKey Aims 8\nOperations Flows 10\nAt a Glance 11\nMateriality 12\nSocial 16\nHuman Rights 17\nDiversity 18\nSafety 19\nConflict Minerals 20\nGovernance 21\nLeadership 22\nPolicies 23\nConformance 24\nEnvironmental 13\nGlobal Reach 6\nSupply Chain 14\nCircular Economy 15\nData Responsibility 25\nInnovation 26\nBoard Message\nBoard Message\nForeword\nForeword\nESG Corporate Structure\nESG Corporate Structure\nGlobal Reach\nGlobal Reach\nProduct Portfolio\nProduct Portfolio\nKey Aims\nKey Aims\nOperations Flow\nOperations Flow\nAt a Glance\nAt a Glance\nMateriality\nMateriality\nEnvironmental\nEnvironmental\nSupply Chain\nSupply Chain\nCircular Economy\nCircular Economy\nSocial\nSocial\nHuman Rights\nHuman Rights\nDiversity\nDiversity\nSafety\nSafety\nConflict Minerals\nConflict Minerals\nGovernance\nGovernance\nLeadership\nLeadership\nPolicies\nPolicies\nConformance\nConformance\nData Responsibility\nData Responsibility\nInnovation\nInnovation\nContents\nContents\nForeword\nForeword\nEnvironmental\nEnvironmental\nSocial\nSocial\nGovernance\nGovernance\nBoard Message\nBoard Message\nESG Corporate Structure\nESG Corporate Structure\nMateriality\nMateriality\nSupply Chain\nSupply Chain\nAt a Glance\nAt a Glance\nInnovation\nInnovation\nCircular Economy\nCircular Economy\nData Responsibility\nData Responsibility\nHuman Rights\nHuman Rights\nPolicies\nPolicies \nSafety\nSafety\nDiversity\nDiversity\nConformance\nConformance \nGlobal Reach\nGlobal Rea"
-      },
-      "validation": {
-        "passed": true,
-        "checks": [
-          {
-            "check": "title_found",
-            "ok": true
-          },
-          {
-            "check": "reporting_year_found",
-            "ok": true
-          }
-        ]
-      }
-    }
+    "status": "read",
+    "companyName": "MAT Foundry Group Limited",
+    "country": "United Kingdom",
+    "city": "Poole",
+    "authorOrIssuer": "Stewart Wren",
+    "authorOrIssuerRole": "author",
+    "reportTitle": "ANNUAL ESG REPORT",
+    "startDate": "2023-01-01",
+    "endDate": "2023-12-31",
+    "notes": [
+      "author is the PDF's author field",
+      "dates: inferred from 'FY2023' (assumed calendar year; the year end is not stated)"
+    ]
   },
   {
     "url": "https://waupacafoundry.com/404?errorPath=/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf",
-    "fetchedAt": "2026-11-10T12:36:59+00:00",
-    "status": "failed",
-    "httpStatus": 415,
-    "error": "The URL did not return a PDF (got text/html titled \"Page Not Found\"). The link may be broken or moved.",
-    "metadata": {
-      "source": {
-        "url": "https://waupacafoundry.com/404?errorPath=/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf",
-        "canonicalUrl": "https://waupacafoundry.com/404?errorPath=%2Fgetmedia%2F31421a40-9111-4b3e-abcd-078849f3014c%2FWF_Sustainability_Report_2024_web_FNL.pdf",
-        "strippedParameters": [],
-        "host": "waupacafoundry.com",
-        "fileName": "404",
-        "year": null,
-        "dateInName": null,
-        "language": null,
-        "documentType": "404"
-      }
-    }
+    "status": "not read",
+    "companyName": null,
+    "country": null,
+    "city": null,
+    "authorOrIssuer": null,
+    "authorOrIssuerRole": null,
+    "reportTitle": null,
+    "startDate": null,
+    "endDate": null,
+    "notes": [
+      "The URL did not return a PDF (got text/html titled \"Page Not Found\"). The link may be broken or moved."
+    ]
   },
   {
     "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
-    "fetchedAt": "2026-11-10T12:37:00+00:00",
-    "status": "ok",
-    "metadata": {
-      "source": {
-        "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
-        "canonicalUrl": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf",
-        "strippedParameters": [
-          "utm_source"
-        ],
-        "host": "www.georgfischer.com",
-        "fileName": "sustainability-statement-2024-en.pdf",
-        "year": 2024,
-        "dateInName": null,
-        "language": "en",
-        "documentType": "sustainability statement",
-        "finalUrl": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
-        "redirects": [],
-        "bytes": 6304826,
-        "contentType": "application/pdf",
-        "lastModified": "Mon, 16 Jun 2025 09:03:35 GMT",
-        "etag": "\"0x8DDACB4AD3057A0\""
-      },
-      "kind": "document",
-      "document": {
-        "sha256": "9151e1b2aff9cd2a24d168eec5a009d7e8e87bd4568444455c4bbb18ac758c65",
-        "company": {
-          "name": "Georg Fischer AG",
-          "shortName": "Georg Fischer",
-          "source": "content+url",
-          "confidence": "high",
-          "candidates": [
-            {
-              "name": "Georg Fischer AG",
-              "shortName": "Georg Fischer",
-              "source": "content+url",
-              "mentions": 19
-            },
-            {
-              "name": "Georgfischer",
-              "shortName": "Georgfischer",
-              "source": "url",
-              "mentions": null
-            },
-            {
-              "name": "GF Corporation",
-              "shortName": "GF",
-              "source": "content",
-              "mentions": 3
-            },
-            {
-              "name": "PricewaterhouseCoopers AG",
-              "shortName": "PricewaterhouseCoopers",
-              "source": "content",
-              "mentions": 3
-            },
-            {
-              "name": "Uponor Corporation",
-              "shortName": "Uponor",
-              "source": "content",
-              "mentions": 1
-            }
-          ]
-        },
-        "scope": {
-          "statement": {
-            "heading": "Basis for preparation",
-            "text": "This statement encompasses the period from 1 January to 31 December 2024, aligning with the Annual Report 2024 for the same year. Sustainability Reports from earlier periods can be accessed online on the GF website and within the Corporate Archives, dating back to 1997, which is recognized as the inaugural year of environmental reporting. The preparation of this statement is guided by the CSRD.",
-            "page": 53
-          },
-          "reportingPeriod": "1 January to 31 December 2024",
-          "reportedAgainst": [
-            {
-              "framework": "ESRS",
-              "basis": "in accordance with"
-            },
-            {
-              "framework": "GHG Protocol",
-              "basis": "in accordance with"
-            },
-            {
-              "framework": "GRI",
-              "basis": "with reference to"
-            }
-          ],
-          "ghgScopeMentions": {
-            "scope1": 43,
-            "scope2": 12,
-            "scope3": 48
-          }
-        },
-        "title": "03 Sustainability Statement 2024",
-        "titleSource": "pdf-metadata",
-        "pdfTitle": "03 Sustainability Statement 2024",
-        "author": null,
-        "creator": "Adobe InDesign 19.1 (Windows)",
-        "createdAt": "2025-02-25T19:14:58+00:00",
-        "pages": 108,
-        "pagesScanned": 108,
-        "reportingYear": 2024,
-        "outline": [],
-        "frameworks": {
-          "ESRS": 452,
-          "GRI": 72,
-          "SASB": 33,
-          "ISSB": 31,
-          "SBTi": 11,
-          "EU Taxonomy": 11,
-          "CSRD": 10,
-          "GHG Protocol": 9,
-          "TCFD": 7,
-          "UN Global Compact": 4,
-          "CDP": 3
-        },
-        "isoStandards": [
-          "ISO 14001",
-          "ISO 14001:2015",
-          "ISO 14955",
-          "ISO 45001",
-          "ISO 45001:2018",
-          "ISO 9001:2015"
-        ],
-        "firstPageText": "32\nAnnual Report 2024\nManagement Report\nSustainability \nStatement\nEditorial 33\nGeneral disclosures 34\nESRS 2 General disclosures 34\nEnvironment 49\nESRS E1 Climate change 50\nESRS E3 Water and marine resources 61\nESRS E5 Resource use and circular economy 64\nSocial  67\nESRS S1 Own workforce 68\nGovernance 78\nESRS G1 Business conduct 79\nDisclosure information:  \nReporting approach 83\nBasis for preparation 84\nTopic-specific IRO – 1 disclosures 87\nEnvironmental performance indicators 91\nSocial performance indicators 96\nGF’s policies 104\nDisclosure requirements in ESRS covered  \nby the undertaking’s sustainability statement 110\nIndependent practitioner’s limited assurance report 135\nContacts 139\n33\nAnnual Report 2024Sustainability Statement\nEditorial\nSustainability  \nis in GF’s DNA\nSince the company’s founding in 1802, one thing remained  \nunchanged: Sustainability is an integral part of GF’s identity.  \nThree decades ago, GF’s commitment was also reflected  \nin its decision to join the International Chamber of Commerce, \ncontributing to the foundation of what would later evolve into  \nthe Sustainable Development Goals (SDGs).\nGF’s unwavering dedication to corporate governance, the health \nand safety of employees, environmental stewardship, and ethical \npractices has consistently been a cornerstone of GF’s identity,  \ninfluencing all its endeavors.\nDriving sustainable change from its core business\nBecause GF’s business model is closely linked to sustainability, it \nis clear that the "
-      },
-      "validation": {
-        "passed": true,
-        "checks": [
-          {
-            "check": "title_found",
-            "ok": true
-          },
-          {
-            "check": "reporting_year_found",
-            "ok": true
-          }
-        ]
-      }
-    }
+    "status": "read",
+    "companyName": "Georg Fischer AG",
+    "country": "Switzerland",
+    "city": "Schaffhausen",
+    "authorOrIssuer": "Georg Fischer AG",
+    "authorOrIssuerRole": "issuer",
+    "reportTitle": "03 Sustainability Statement 2024",
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31",
+    "notes": []
   },
   {
     "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
-    "fetchedAt": "2026-11-10T12:37:13+00:00",
-    "status": "ok",
-    "metadata": {
-      "source": {
-        "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
-        "canonicalUrl": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
-        "strippedParameters": [],
-        "host": "waupacafoundry.com",
-        "fileName": "WF_Sustainability_Report_2024_web_FNL-(1).pdf",
-        "year": 2024,
-        "dateInName": null,
-        "language": null,
-        "documentType": "WF Sustainability Report web FNL (1)",
-        "finalUrl": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
-        "redirects": [],
-        "bytes": 7529633,
-        "contentType": "application/pdf",
-        "lastModified": "Wed, 13 May 2026 21:38:49 GMT",
-        "etag": "\"639143051294144963\""
-      },
-      "kind": "document",
-      "document": {
-        "sha256": "49784b6cde1aad091ab055802ea31c6c06e9cd4ea02de92a9d5d63ec2c5662cf",
-        "company": {
-          "name": "Waupaca Foundry",
-          "shortName": "Waupaca Foundry",
-          "source": "content+url",
-          "confidence": "high",
-          "candidates": [
-            {
-              "name": "Waupaca Foundry",
-              "shortName": "Waupaca Foundry",
-              "source": "content+url",
-              "mentions": 4
-            },
-            {
-              "name": "Wf",
-              "shortName": "Wf",
-              "source": "file name",
-              "mentions": null
-            },
-            {
-              "name": "Collection Bargaining AA Child Labor AB",
-              "shortName": "Collection Bargaining AA Child Labor",
-              "source": "content",
-              "mentions": 1
-            },
-            {
-              "name": "Rights Assessment AF Local Communities AG",
-              "shortName": "Rights Assessment AF Local Communities",
-              "source": "content",
-              "mentions": 1
-            },
-            {
-              "name": "GRI Index TRC Environmental Corporation",
-              "shortName": "GRI Index TRC Environmental",
-              "source": "content",
-              "mentions": 1
-            }
-          ]
-        },
-        "scope": {
-          "statement": {
-            "heading": "Report Parameters",
-            "text": "TRC Environmental Corporation (TRC) was retained to assist WFI with the development of this sustainability report to ensure consistency with the Global Reporting Initiative (GRI) standards. WFI has reported the information cited in this GRI content index for the period [April 1, 2024 - March 31, 2025] with reference to the GRI Standards.",
-            "page": 45
-          },
-          "reportingPeriod": "April 1, 2024 - March 31, 2025",
-          "reportedAgainst": [
-            {
-              "framework": "GRI",
-              "basis": "with reference to"
-            }
-          ],
-          "ghgScopeMentions": {
-            "scope1": 11,
-            "scope2": 7,
-            "scope3": 2
-          }
-        },
-        "title": "Sustainability Report 2024",
-        "titleSource": "first-page-heading",
-        "pdfTitle": null,
-        "author": null,
-        "creator": "Adobe InDesign 21.1 (Macintosh)",
-        "createdAt": "2026-03-26T16:42:03-05:00",
-        "pages": 46,
-        "pagesScanned": 46,
-        "reportingYear": 2024,
-        "outline": [],
-        "frameworks": {
-          "GRI": 18,
-          "CDP": 11,
-          "SASB": 4
-        },
-        "isoStandards": [
-          "ISO 14001",
-          "ISO 14001:2015",
-          "ISO 45001:2018",
-          "ISO 50001",
-          "ISO 50001:2011",
-          "ISO 50001:2018",
-          "ISO 9001:2015"
-        ],
-        "firstPageText": "Sustainability Report  2024\n2\nSustainability Report 2024\nCEO STATEMENT\nLetter from the CEO .........................................................................3\nABOUT US\nWho We Are .........................................................................................4\nHistorical Milestones .........................................................................5\nOur Locations ......................................................................................6\nOur Process and Technology .........................................................9\nGovernance Structure ....................................................................10\nEthics and Integrity ..........................................................................11\nOUR COMMITMENT TO SUSTAINABILITY\nSustainability ......................................................................................12\nMateriality Assessment ..................................................................13\nStakeholder Engagement .............................................................15\nOPERATIONAL EXCELLENCE\nEconomic Performance .................................................................19\nProducts and Markets Served ....................................................20\nCommitment to Quality .................................................................21\nResponsible Procurement ............................................................23 \nInvesting in Our Communities .............................."
-      },
-      "validation": {
-        "passed": true,
-        "checks": [
-          {
-            "check": "title_found",
-            "ok": true
-          },
-          {
-            "check": "reporting_year_found",
-            "ok": true
-          }
-        ]
-      }
-    }
+    "status": "read",
+    "companyName": "Waupaca Foundry",
+    "country": "United States",
+    "city": "Waupaca",
+    "authorOrIssuer": "Waupaca Foundry",
+    "authorOrIssuerRole": "issuer",
+    "reportTitle": "Sustainability Report 2024",
+    "startDate": "2024-04-01",
+    "endDate": "2025-03-31",
+    "notes": []
   }
 ]

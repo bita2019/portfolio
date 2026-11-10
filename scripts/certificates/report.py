@@ -7,6 +7,8 @@ from pathlib import Path
 from pypdf import PdfReader
 
 from company import detect_company
+from dates import report_dates
+from location import detect_location
 
 MAX_SCAN_PAGES = int(__import__("os").getenv("MAX_SCAN_PAGES", "300"))
 
@@ -189,10 +191,16 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
     pdf_title = (meta.title if meta and meta.title else None) or None
     title, title_source = _choose_title(pdf_title, _page_heading(pages[0]) if len(pages) else None, first_line)
 
+    company = detect_company(url, texts)
+    scope = _scope(texts)
+    year_value = int(year.group(1)) if year else None
+
     return {
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-        "company": detect_company(url, texts),
-        "scope": _scope(texts),
+        "company": company,
+        "location": detect_location(url, texts, company["name"], company["shortName"]),
+        "dates": report_dates(texts, (scope["statement"] or {}).get("text"), year_value),
+        "scope": scope,
         "title": title,
         "titleSource": title_source,
         "pdfTitle": pdf_title,

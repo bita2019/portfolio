@@ -26,9 +26,13 @@ curl -X POST localhost:8000/extract -H 'content-type: application/json' \
      -d '{"url": "https://www.georgfischer.com/.../sustainability-statement-2024-en.pdf?utm_source=chatgpt.com"}'
 ```
 
-Returns `source` (canonical URL with tracking parameters removed, year / language / type read from the URL, HTTP headers),
-`kind` (`certificate` or `document`), the extracted `certificate` or `document` metadata (a document includes `title` and `company` with its source and confidence), and a `validation` block
-(certificates: organization / standard / dates found and valid, expired or not yet valid; documents: title and reporting year found).
+By default it returns a short record: `companyName`, `country`, `city`, `authorOrIssuer` (+ `authorOrIssuerRole`: author or issuer),
+`reportTitle`, `startDate`, `endDate` and `notes` (anything inferred, uncertain or missing). Add `?detail=full` for everything the
+extractor found (frameworks, outline, scope statement, company candidates, validation, ...).
+
+Dates come from the report when it states its period; otherwise they are inferred (calendar year, or a stated end date with the start
+assumed 12 months earlier) and `notes` says so. For a certificate the fields are the holder, its address, the certification body, the
+standard and the validity dates.
 
 The service downloads caller-supplied URLs, so it only follows http(s) on ports 80/443, re-checks every redirect, refuses hosts that
 resolve to private addresses, and caps the download size (`MAX_PDF_MB`, default 100). Set `ALLOWED_HOSTS` to restrict it to known hosts
