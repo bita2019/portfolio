@@ -1,7 +1,7 @@
 [
   {
     "url": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
-    "fetchedAt": "2026-11-09T23:59:57+00:00",
+    "fetchedAt": "2026-11-10T12:06:00+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -82,7 +82,7 @@
   },
   {
     "url": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
-    "fetchedAt": "2026-11-10T00:00:06+00:00",
+    "fetchedAt": "2026-11-10T12:06:12+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -190,7 +190,7 @@
   },
   {
     "url": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
-    "fetchedAt": "2026-11-10T00:00:12+00:00",
+    "fetchedAt": "2026-11-10T12:06:20+00:00",
     "status": "ok",
     "metadata": {
       "source": {
@@ -286,7 +286,7 @@
   },
   {
     "url": "https://waupacafoundry.com/404?errorPath=/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf",
-    "fetchedAt": "2026-11-10T00:00:16+00:00",
+    "fetchedAt": "2026-11-10T12:06:24+00:00",
     "status": "failed",
     "httpStatus": 415,
     "error": "The URL did not return a PDF (got text/html titled \"Page Not Found\"). The link may be broken or moved.",
@@ -306,7 +306,7 @@
   },
   {
     "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
-    "fetchedAt": "2026-11-10T00:00:16+00:00",
+    "fetchedAt": "2026-11-10T12:06:26+00:00",
     "status": "failed",
     "httpStatus": 502,
     "error": "The network proxy refused or could not reach this host (check its egress allowlist).",
@@ -323,6 +323,110 @@
         "dateInName": null,
         "language": "en",
         "documentType": "sustainability statement"
+      }
+    }
+  },
+  {
+    "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
+    "fetchedAt": "2026-11-10T12:06:26+00:00",
+    "status": "ok",
+    "metadata": {
+      "source": {
+        "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
+        "canonicalUrl": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
+        "strippedParameters": [],
+        "host": "waupacafoundry.com",
+        "fileName": "WF_Sustainability_Report_2024_web_FNL-(1).pdf",
+        "year": 2024,
+        "dateInName": null,
+        "language": null,
+        "documentType": "WF Sustainability Report web FNL (1)",
+        "finalUrl": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
+        "redirects": [],
+        "bytes": 7529633,
+        "contentType": "application/pdf",
+        "lastModified": "Wed, 13 May 2026 21:38:49 GMT",
+        "etag": "\"639143051294144963\""
+      },
+      "kind": "document",
+      "document": {
+        "sha256": "49784b6cde1aad091ab055802ea31c6c06e9cd4ea02de92a9d5d63ec2c5662cf",
+        "company": {
+          "name": "Waupaca Foundry",
+          "shortName": "Waupaca Foundry",
+          "source": "content+url",
+          "confidence": "high",
+          "candidates": [
+            {
+              "name": "Waupaca Foundry",
+              "shortName": "Waupaca Foundry",
+              "source": "content+url",
+              "mentions": 4
+            },
+            {
+              "name": "Wf",
+              "shortName": "Wf",
+              "source": "file name",
+              "mentions": null
+            },
+            {
+              "name": "Collection Bargaining AA Child Labor AB",
+              "shortName": "Collection Bargaining AA Child Labor",
+              "source": "content",
+              "mentions": 1
+            },
+            {
+              "name": "Rights Assessment AF Local Communities AG",
+              "shortName": "Rights Assessment AF Local Communities",
+              "source": "content",
+              "mentions": 1
+            },
+            {
+              "name": "GRI Index TRC Environmental Corporation",
+              "shortName": "GRI Index TRC Environmental",
+              "source": "content",
+              "mentions": 1
+            }
+          ]
+        },
+        "title": "Sustainability Report 2024",
+        "titleSource": "first-page-heading",
+        "pdfTitle": null,
+        "author": null,
+        "creator": "Adobe InDesign 21.1 (Macintosh)",
+        "createdAt": "2026-03-26T16:42:03-05:00",
+        "pages": 46,
+        "pagesScanned": 46,
+        "reportingYear": 2024,
+        "outline": [],
+        "frameworks": {
+          "GRI": 18,
+          "CDP": 11,
+          "SASB": 4
+        },
+        "isoStandards": [
+          "ISO 14001",
+          "ISO 14001:2015",
+          "ISO 45001:2018",
+          "ISO 50001",
+          "ISO 50001:2011",
+          "ISO 50001:2018",
+          "ISO 9001:2015"
+        ],
+        "firstPageText": "Sustainability Report  2024\n2\nSustainability Report 2024\nCEO STATEMENT\nLetter from the CEO .........................................................................3\nABOUT US\nWho We Are .........................................................................................4\nHistorical Milestones .........................................................................5\nOur Locations ......................................................................................6\nOur Process and Technology .........................................................9\nGovernance Structure ....................................................................10\nEthics and Integrity ..........................................................................11\nOUR COMMITMENT TO SUSTAINABILITY\nSustainability ......................................................................................12\nMateriality Assessment ..................................................................13\nStakeholder Engagement .............................................................15\nOPERATIONAL EXCELLENCE\nEconomic Performance .................................................................19\nProducts and Markets Served ....................................................20\nCommitment to Quality .................................................................21\nResponsible Procurement ............................................................23 \nInvesting in Our Communities .............................."
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "check": "title_found",
+            "ok": true
+          },
+          {
+            "check": "reporting_year_found",
+            "ok": true
+          }
+        ]
       }
     }
   }

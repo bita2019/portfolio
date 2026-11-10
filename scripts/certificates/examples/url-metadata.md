@@ -1,6 +1,6 @@
 # Report URLs and their extracted metadata
 
-Generated 2026-11-10 00:00 UTC by `document_urls.py`. 3 of 5 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
+Generated 2026-11-10 12:06 UTC by `document_urls.py`. 4 of 6 URLs were downloaded and read; the rest are listed with what the URL alone reveals.
 
 | # | Company | Document | Year | Status |
 |---|---|---|---|---|
@@ -9,6 +9,7 @@ Generated 2026-11-10 00:00 UTC by `document_urls.py`. 3 of 5 URLs were downloade
 | 3 | MAT Foundry Group Limited | Group ESG Report | 2023 | ✅ read |
 | 4 | — | 404 | — | ⚠️ 415 |
 | 5 | — | sustainability statement | 2024 | ⚠️ 502 |
+| 6 | Waupaca Foundry | WF Sustainability Report web FNL (1) | 2024 | ✅ read |
 
 ## 1. www.fonderieariotti.com
 
@@ -128,6 +129,35 @@ From the URL alone:
 | Document type | sustainability statement |
 | Year | 2024 |
 | Language | en |
+
+## 6. waupacafoundry.com
+
+`https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US`
+
+| Field | Value |
+|---|---|
+| Company | Waupaca Foundry (high confidence, from content+url) |
+| Short name | Waupaca Foundry |
+| Title | Sustainability Report 2024 (from first-page-heading) |
+| Reporting year | 2024 |
+| Date in file name | — |
+| Document type (from URL) | WF Sustainability Report web FNL (1) |
+| Language (from URL) | — |
+| Canonical URL | https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US |
+| Dropped tracking parameters | — |
+| Pages | 46 |
+| File size | 7.5 MB |
+| Last modified (server) | Wed, 13 May 2026 21:38:49 GMT |
+| PDF created | 2026-03-26 16:42:03-05:00 |
+| Created with | Adobe InDesign 21.1 (Macintosh) |
+| Author | — |
+| Frameworks mentioned | GRI ×18, CDP ×11, SASB ×4 |
+| ISO standards mentioned | ISO 14001, ISO 14001:2015, ISO 45001:2018, ISO 50001, ISO 50001:2011, ISO 50001:2018, ISO 9001:2015 |
+| Outline | — |
+| SHA-256 | `49784b6cde1aad091ab055802ea31c6c06e9cd4ea02de92a9d5d63ec2c5662cf` |
+| Validation | passed — title_found: ok, reporting_year_found: ok |
+
+Company candidates considered: Waupaca Foundry (content+url); Wf (file name); Collection Bargaining AA Child Labor AB (content); Rights Assessment AF Local Communities AG (content); GRI Index TRC Environmental Corporation (content)
 
 ## Notes
 
