@@ -16,6 +16,22 @@ python scripts/certificates/search.py "iron foundry certified to ISO 9001"
 
 Ingest is idempotent (keyed on the file's SHA-256) and creates the `certificates_vector` index on first run.
 
+### Extract metadata from many PDFs on your own machine
+
+```
+pip install -r scripts/certificates/requirements-extract.txt
+cd scripts/certificates
+
+python extract_metadata.py path/to/pdf_folder -o results/metadata        # every PDF in the folder
+python extract_metadata.py path/to/pdf_folder -r                        # ... including sub-folders
+python extract_metadata.py --urls urls.txt                              # URLs, one per line
+python extract_metadata.py pdf_folder --urls urls.txt -o results/metadata   # both at once
+```
+
+Writes `results/metadata.json`, `.xlsx` and `.md`: one row per PDF with company name, country, city, author or issuer, title of report,
+reporting period, start date and end date, plus notes. A PDF that cannot be read is listed as "not read" with the reason and does not stop
+the run. For local files without a URL the company name is found from the report text alone; the notes column flags lower-confidence names.
+
 ### Extraction service (URL in, validated metadata out)
 
 ```

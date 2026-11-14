@@ -1,6 +1,6 @@
-# Report URLs and their metadata
+# Report metadata
 
-Generated 2026-11-14 13:42 UTC by `document_urls.py`. 6 of 7 URLs were read.
+Generated 2026-11-14 14:55 UTC by `extract_metadata.py`. 6 of 7 PDFs were read.
 
 | # | Company name | Country | City | Author or issuer | Title of report | Reporting period | Start date | End date |
 |---|---|---|---|---|---|---|---|---|
@@ -9,10 +9,10 @@ Generated 2026-11-14 13:42 UTC by `document_urls.py`. 6 of 7 URLs were read.
 | 3 | MAT Foundry Group Limited | United Kingdom | Poole | Stewart Wren (author) | ANNUAL ESG REPORT 2023 | FY2023 | — | — |
 | 4 | — | — | — | — | — | — | — | — |
 | 5 | Georg Fischer AG | Switzerland | Schaffhausen | Georg Fischer AG (issuer) | 03 Sustainability Statement 2024 | 1 January to 31 December 2024 | 2024-01-01 | 2024-12-31 |
-| 6 | Waupaca Foundry | United States | Waupaca | Waupaca Foundry (issuer) | Sustainability Report 2024 | April 1, 2024 - March 31, 2025 | 2024-04-01 | 2025-03-31 |
+| 6 | Waupaca Foundry Inc. | United States | Waupaca | Waupaca Foundry Inc. (issuer) | Sustainability Report 2024 | April 1, 2024 - March 31, 2025 | 2024-04-01 | 2025-03-31 |
 | 7 | BORG Automotive Group | Denmark | Silkeborg | BORG Automotive Group (issuer) | ESG REPORT 2024 | 2024 FINANCIAL YEAR | — | — |
 
-## URLs and notes
+## Sources and notes
 
 1. `https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf`
    - start and end date not stated in the report

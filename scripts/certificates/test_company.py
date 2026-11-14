@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-import service
+import analyze
 from company import detect_company, host_label
 
 
@@ -62,8 +62,8 @@ def test_certificate_company_comes_from_the_certificate(tmp_path):
     from test_extract import TUV, make_pdf
 
     path = make_pdf(tmp_path / "c.pdf", TUV)
-    with mock.patch("service.download", return_value=(path, {"finalUrl": "x"})):
-        r = service.process("https://certs.example.com/acme.pdf", datetime(2026, 1, 1, tzinfo=timezone.utc))
+    with mock.patch("analyze.download", return_value=(path, {"finalUrl": "x"})):
+        r = analyze.process("https://certs.example.com/acme.pdf", datetime(2026, 1, 1, tzinfo=timezone.utc))
     assert r["document"]["company"] == {"name": "Acme Castings GmbH", "shortName": None, "source": "certificate",
                                         "confidence": "high", "candidates": []}
 

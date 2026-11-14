@@ -1,6 +1,7 @@
 [
   {
     "url": "https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf",
+    "file": null,
     "status": "read",
     "companyName": "Fonderie Ariotti SpA",
     "country": "Italy",
@@ -17,6 +18,7 @@
   },
   {
     "url": "https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf",
+    "file": null,
     "status": "read",
     "companyName": "Castings PLC",
     "country": "United Kingdom",
@@ -33,6 +35,7 @@
   },
   {
     "url": "https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf",
+    "file": null,
     "status": "read",
     "companyName": "MAT Foundry Group Limited",
     "country": "United Kingdom",
@@ -50,6 +53,7 @@
   },
   {
     "url": "https://waupacafoundry.com/404?errorPath=/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf",
+    "file": null,
     "status": "not read",
     "companyName": null,
     "country": null,
@@ -66,6 +70,7 @@
   },
   {
     "url": "https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com",
+    "file": null,
     "status": "read",
     "companyName": "Georg Fischer AG",
     "country": "Switzerland",
@@ -80,11 +85,12 @@
   },
   {
     "url": "https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US",
+    "file": null,
     "status": "read",
-    "companyName": "Waupaca Foundry",
+    "companyName": "Waupaca Foundry Inc.",
     "country": "United States",
     "city": "Waupaca",
-    "authorOrIssuer": "Waupaca Foundry",
+    "authorOrIssuer": "Waupaca Foundry Inc.",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "Sustainability Report 2024",
     "reportingPeriod": "April 1, 2024 - March 31, 2025",
@@ -94,6 +100,7 @@
   },
   {
     "url": "https://borgautomotive-group.com/media/e5smim2i/esg-report-2024.pdf",
+    "file": null,
     "status": "read",
     "companyName": "BORG Automotive Group",
     "country": "Denmark",
