@@ -283,3 +283,28 @@ def test_default_response_is_the_short_record(client, tmp_path, local_server):
     assert body["authorOrIssuer"] == "TUV SUD Management Service GmbH" and body["authorOrIssuerRole"] == "issuer"
     assert (body["startDate"], body["endDate"]) == ("2024-05-22", "2027-05-21")
     assert body["reportTitle"] == "DIN EN ISO 9001:2015 certificate"
+
+
+def test_cover_title_split_into_blocks_is_joined(tmp_path):
+    from report import extract_document
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((50, 100), "ESG", fontsize=70)
+    page.insert_text((50, 150), "REPORT", fontsize=40)
+    page.insert_text((50, 190), "2024", fontsize=40)
+    page.insert_text((50, 300), "Contents and other small print", fontsize=9)
+    doc.save(tmp_path / "e.pdf")
+    assert extract_document(tmp_path / "e.pdf")["title"] == "ESG REPORT 2024"
+
+
+def test_year_printed_after_the_title_is_attached(tmp_path):
+    from report import extract_document
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((50, 100), "ANNUAL ESG REPORT", fontsize=40)
+    page.insert_text((50, 150), "2023", fontsize=20)
+    page.insert_text((50, 300), "Board message", fontsize=9)
+    doc.save(tmp_path / "y.pdf")
+    assert extract_document(tmp_path / "y.pdf")["title"] == "ANNUAL ESG REPORT 2023"

@@ -39,7 +39,7 @@
     "city": "Poole",
     "authorOrIssuer": "Stewart Wren",
     "authorOrIssuerRole": "author",
-    "reportTitle": "ANNUAL ESG REPORT",
+    "reportTitle": "ANNUAL ESG REPORT 2023",
     "reportingPeriod": "FY2023",
     "startDate": null,
     "endDate": null,
@@ -91,5 +91,21 @@
     "startDate": "2024-04-01",
     "endDate": "2025-03-31",
     "notes": []
+  },
+  {
+    "url": "https://borgautomotive-group.com/media/e5smim2i/esg-report-2024.pdf",
+    "status": "read",
+    "companyName": "BORG Automotive Group",
+    "country": "Denmark",
+    "city": "Silkeborg",
+    "authorOrIssuer": "BORG Automotive Group",
+    "authorOrIssuerRole": "issuer",
+    "reportTitle": "ESG REPORT 2024",
+    "reportingPeriod": "2024 FINANCIAL YEAR",
+    "startDate": null,
+    "endDate": null,
+    "notes": [
+      "start and end date not stated in the report"
+    ]
   }
 ]

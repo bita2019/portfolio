@@ -13,6 +13,7 @@ from company import detect_company, host_label
     ("https://waupacafoundry.com/getmedia/a.pdf", "waupacafoundry"),
     ("https://reports.georgfischer.com/a.pdf", "georgfischer"),
     ("https://www.acme.co.uk/a.pdf", "acme"),
+    ("https://borgautomotive-group.com/media/x.pdf", "borgautomotivegroup"),
     ("not a url", None),
 ])
 def test_host_label(url, label):
@@ -65,3 +66,9 @@ def test_certificate_company_comes_from_the_certificate(tmp_path):
         r = service.process("https://certs.example.com/acme.pdf", datetime(2026, 1, 1, tzinfo=timezone.utc))
     assert r["document"]["company"] == {"name": "Acme Castings GmbH", "shortName": None, "source": "certificate",
                                         "confidence": "high", "candidates": []}
+
+
+def test_hyphenated_domain_is_respelled_from_the_text():
+    texts = ["ESG REPORT 2024", "ABOUT BORG Automotive Group. BORG Automotive Group is headquartered in Denmark."]
+    c = detect_company("https://borgautomotive-group.com/media/e5smim2i/esg-report-2024.pdf", texts)
+    assert c["name"] == "BORG Automotive Group" and c["confidence"] == "high"

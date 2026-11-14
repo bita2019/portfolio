@@ -39,7 +39,9 @@ _ANY_DATE = rf"(?:{_MONTH}\s+\d{{1,2}},?\s+\d{{4}}|\d{{1,2}}\s+{_MONTH}\s+\d{{4}
 PERIOD_RANGE = re.compile(
     rf"(?:{_ANY_DATE}|\d{{1,2}}\s+{_MONTH}|{_MONTH}\s+\d{{1,2}})\s*(?:-|\u2013|\u2014|to|until|through)\s*{_ANY_DATE}", re.I
 )
-PERIOD_YEAR = re.compile(r"\b(?:(?:calendar|financial|fiscal) year (?:ended? )?\d{4}|FY\s?\d{2,4})\b", re.I)
+PERIOD_YEAR = re.compile(
+    r"\b(?:(?:calendar|financial|fiscal) year (?:ended? )?\d{4}|FY\s?\d{2,4}|20\d{2} (?:financial|fiscal) year)\b", re.I
+)
 APPROACH = re.compile(
     r"\b(in accordance with|with reference to|based on|aligned with)\s+(?:the\s+)?(GRI|ESRS|TCFD|SASB|ISSB|CDP|GHG Protocol)\b", re.I
 )
@@ -137,8 +139,17 @@ def _page_heading(page) -> str | None:
     if not chunks:
         return None
     biggest = max(size for size, _ in chunks)
-    heading = " ".join(text for size, text in chunks if size >= biggest * 0.95)
-    return " ".join(heading.split())[:160] or None
+    big = [i for i, (size, _) in enumerate(chunks) if size >= biggest * 0.95]
+    first, last = big[0], big[-1]
+    words = " ".join(text for _, text in chunks[first: last + 1] if True).split()
+    end = last
+    # A cover title is often split into blocks ("ESG" / "REPORT" / "2024"): take a short continuation when the heading is tiny
+    while len(words) < 3 and end + 1 < len(chunks) and len(chunks[end + 1][1]) <= 25 and end - last < 2:
+        end += 1
+        words += chunks[end][1].split()
+    if end + 1 < len(chunks) and re.fullmatch(r"20\d{2}", chunks[end + 1][1]) and not re.search(r"20\d{2}", " ".join(words)):
+        words += chunks[end + 1][1].split()  # a year printed just after the title belongs to it
+    return " ".join(words)[:160] or None
 
 
 def _choose_title(pdf_title: str | None, heading: str | None, first_line: str | None) -> tuple[str | None, str | None]:

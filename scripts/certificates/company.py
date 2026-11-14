@@ -34,7 +34,7 @@ def host_label(url: str | None) -> str | None:
         labels = labels[:-1]  # top-level domain
         if len(labels) >= 2 and labels[-1] in SECOND_LEVEL:
             labels = labels[:-1]
-    return labels[-1] if labels else None
+    return _key(labels[-1]) if labels else None  # letters and digits only: "borgautomotive-group" -> "borgautomotivegroup"
 
 
 def _file_name_candidate(url: str | None) -> str | None:

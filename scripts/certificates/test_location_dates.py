@@ -86,3 +86,11 @@ def test_author_or_issuer_prefers_a_real_author_name():
     for generic in (None, "", "admin", "Microsoft Office User", "PC"):
         s = summarize({"kind": "document", "document": {**base, "author": generic}})
         assert (s["authorOrIssuer"], s["authorOrIssuerRole"]) == ("Acme Ltd", "issuer")
+
+
+def test_year_first_financial_year_is_a_reporting_period_without_dates():
+    from report import _scope
+
+    s = _scope(["REVENUE FOR THE 2024 FINANCIAL YEAR Substantial contribution criterion"])
+    assert s["reportingPeriod"] == "2024 FINANCIAL YEAR"
+    assert report_dates(["REVENUE FOR THE 2024 FINANCIAL YEAR"], None)["startDate"] is None
