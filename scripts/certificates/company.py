@@ -38,11 +38,16 @@ GENERIC_WORDS = set((
 ORG_WORDS = set((
     "group foundry foundries fonderie fonderia giesserei gießerei castings casting industries industrie holding holdings company "
     "corporation corp technologies technology automotive metals steel engineering manufacturing systems solutions products "
-    "international enterprises partners works plc ltd limited gmbh ag inc llc spa sa nv bv ab asa oyj").split())
+    "international enterprises partners works plc ltd limited gmbh ag inc llc spa sa nv bv ab asa oyj aluminum aluminium chemicals "
+    "motors electric materials resources mining minerals paper cement plastics tools bearings forgings").split())
 
 
 ABBREVIATIONS = {"wm", "st", "co", "inc", "corp", "ltd", "mr", "dr", "no", "bros", "intl"}
-AUDITORS = re.compile(r"pricewaterhouse|\bpwc\b|kpmg|deloitte|ernst|\bey\b|\bbdo\b|grant thornton|\btrc\b", re.I)
+AUDITORS = re.compile(
+    r"pricewaterhouse|\bpwc\b|kpmg|deloitte|ernst|\bey\b|\bbdo\b|grant thornton|\btrc\b|\bsgs\b|bureau veritas|t[üu]v|\bdnv\b|lloyd|"
+    r"intertek|sustainalytics|ecovadis|mazars|baker tilly|\brsm\b|crowe|\berm\b|moody|\bdekra\b|\bbsi\b",
+    re.I,
+)
 STARTERS = EDGE_WORDS | {"since", "during", "while", "when", "after", "before", "today", "here", "however", "also", "but", "thanks",
                          "through", "across", "within", "about", "moreover", "furthermore", "additionally", "therefore", "overall",
                          "further", "last", "next", "each", "every", "both", "some", "many", "most", "other", "new", "more"}
@@ -58,6 +63,9 @@ def _plausible(short: str) -> bool:
         return False
     if any(len(w) <= 2 and w.isupper() for w in words):
         return False
+    if len(words) == 1 and (low[0] in GENERIC_WORDS or low[0] in {"services", "solutions", "systems", "group", "holding", "holdings",
+                                                                   "company", "corporation", "international", "industries", "technologies", "products"}):
+        return False  # "Services A/S": a generic word is not a name
     return not (len(words) == 1 and words[0].isupper() and len(words[0]) <= 4)
 
 
@@ -181,10 +189,13 @@ def detect_company(url: str | None, texts: list[str], pdf_author: str | None = N
         candidates.append({"name": author, "shortName": short, "source": "pdf author" + ("+url" if agrees else ""),
                            "mentions": None, "_rank": 400 + (1000 if agrees else 0)})
     for name, count in subjects.items():
+        # a phrase that is only ever a sentence subject needs to look like an organisation ("... Group", "... Foundry") or recur often
+        looks_like_org = any(w.lower() in ORG_WORDS for w in name.split())
         if count >= 2 and not any(_key(c["shortName"]) == _key(name) for c in candidates):
+            weak = 0 if (count >= 5 or looks_like_org) else -100  # recurring phrases that do not look like an organisation rank last
             agrees = bool(label) and _key(name).startswith(label)
             candidates.append({"name": name, "shortName": name, "source": "content" + ("+url" if agrees else ""),
-                               "mentions": count, "_rank": 5 * count + (1000 if agrees else 0)})
+                               "mentions": count, "_rank": 5 * count + weak + (1000 if agrees else 0)})
     for name, count in spelled.items():
         if not any(_key(c["shortName"]) == _key(name) for c in candidates):
             candidates.append({"name": name, "shortName": name, "source": "content+url", "mentions": count,
