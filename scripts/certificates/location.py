@@ -44,11 +44,20 @@ ITALY = re.compile(r"\b\d{5}\s+([A-Z][\w'’ -]{1,30}?)\s*\(([A-Z]{2})\)")
 US_ZIP = re.compile(r"\b([A-Z][a-z]+(?: [A-Z][a-z]+)?),?\s+([A-Z]{2})\s+\d{5}(?:-\d{4})?\b")
 POSTAL_LINE = re.compile(r"^(\d{4,5})\s+([A-Z][^\W\d_][\w'’. -]{2,28})$")
 HQ = re.compile(
-    r"(?:headquarter(?:s|ed)|head ?office|registered office|principal office|based)\s+(?:is\s+)?(?:located\s+)?in\s+"
-    r"(?:the\s+(?:city|town)\s+of\s+)?([A-Z][\w.'’ -]{1,30}?)(?:,\s*([A-Z][\w.'’ -]{1,30}?))?"
-    r"(?=[.;,)]|\s+(?:and|with|where|is|has|which|since|that|in)\b)"
+    r"(?i:headquarter(?:s|ed)|head ?office|registered office|principal office)\s+(?:(?i:is|are)\s+)?(?:(?i:located|situated|based)\s+)?(?i:in)\s+"
+    r"(?:the\s+(?:city|town)\s+of\s+)?([A-Z][\w.'’ -]{1,30}?)(?:\s*\(([A-Z]{2})\))?(?:,\s*([A-Z][\w.'’ -]{1,30}?))?"
+    r"(?=[.;,)]|\s+(?:and|with|where|is|has|which|since|that|in|at)\b|$)"
 )
+OFFICE_LABEL = re.compile(r"(?i:head\s*offi\s?ce|headquarters|registered office|corporate (?:office|address)|company address)")
 NOT_A_CITY = re.compile(r"report|statement|sustainab|annual|contents|chapter|page|table|figure", re.I)
+BAD_CITY = re.compile(
+    r"\b(offices?|headquarters?|campus|plants?|centre|center|department|division|financial|corporation|company|group|holdings?|"
+    r"motors?|industries|limited|ltd|inc|gmbh|plc|factory|facility|facilities|site|region|europe|asia|america|africa|pacific|"
+    r"international|global|north|south|east|west|director|officer|president|manager|chairman|chief|ceo|cfo|vice|executive|"
+    r"representative|secretary|member|board|established)\b|\d",
+    re.I,
+)
+REGION_SEGMENT = re.compile(r"prefecture|province|state|county|region|district|\d", re.I)
 
 
 def country_of(token: str | None) -> str | None:
@@ -68,18 +77,63 @@ def _classify(first: str, second: str | None) -> tuple[str | None, str | None]:
 
 def _clean_city(text: str) -> str | None:
     text = re.sub(r"\s+", " ", text).strip(" ,.-|")
-    return text if text and not NOT_A_CITY.search(text) and len(text) <= 32 else None
+    if not text or len(text) > 32 or NOT_A_CITY.search(text) or BAD_CITY.search(text) or country_of(text):
+        return None
+    return text
 
 
-def detect_location(url: str | None, texts: list[str], company: str | None = None, short_name: str | None = None) -> dict:
-    # (strength, city, country, evidence): the strongest evidence wins; ties go to the most frequent city
-    found: list[tuple[int, str | None, str | None, str]] = []
+def _country_at_start(segment: str) -> str | None:
+    low = segment.strip(" .").lower()
+    for alias in sorted(ALIAS, key=len, reverse=True):
+        if low.startswith(alias) and not low[len(alias):len(alias) + 1].isalpha():
+            return ALIAS[alias]
+    return None
+
+
+def _office_address(flat: str) -> tuple[str | None, str | None]:
+    """'Head Office 3-11-8, Sumiyoshi-cho, Anjo, Aichi 446-8502, Japan' -> ('Anjo', 'Japan')."""
+    for m in OFFICE_LABEL.finditer(flat):
+        segments = [s.strip() for s in flat[m.end(): m.end() + 170].split(",")]
+        for i, segment in enumerate(segments):
+            country = _country_at_start(segment)
+            if country and i >= 2:
+                for back in range(i - 1, 0, -1):  # skip the prefecture / state / postcode, take the place before it
+                    seg = segments[back]
+                    if REGION_SEGMENT.search(seg) and not re.search(r"\bcity\b", seg, re.I) or seg.lower() in US_STATES:
+                        continue
+                    city = _clean_city(seg.split(" Head")[-1]) or (_clean_city(re.sub(r"\bCity\b", "", seg)) and seg.strip())
+                    if city and re.search(r"-(?:ku|cho|machi|gun)$", city, re.I) and back + 1 < i:
+                        city = _clean_city(re.sub(r"[\d-]+", "", segments[back + 1])) or city  # "Chiyoda-ku, Tokyo 100-8071" -> Tokyo
+                    if city:
+                        return city, country
+                    break
+            if country:
+                break
+    return None, None
+
+
+def detect_location(url: str | None, texts: list[str], company: str | None = None, short_name: str | None = None, debug: bool = False):
+    """The company's base. Only addresses and sentences about the company itself count; a bare "City, Country" mention
+    (a plant, a customer, a supplier) is never used to pick a city. City and country come from the same piece of evidence."""
+    found: list[tuple[int, str | None, str | None, str]] = []  # (strength, city, country, evidence)
+    names = [n for n in (company, short_name) if n and len(n) > 2]
+    for full in {n for n in (company, short_name) if n}:  # "Commercial Metals Company" -> "CMC", "Commercial Metals" -> "CM"
+        words = [w for w in full.split() if w[0].isalpha()]
+        stripped = [w for w in words if not re.fullmatch(r"(?:" + "|".join(["Company", "Corporation", "Corp\\.?", "Inc\\.?", "Ltd\\.?", "Limited", "AG", "SE", "PLC", "N\\.V\\.?", "S\\.p\\.A\\.?", "A/S", "ASA", "GmbH"]) + ")", w, re.I)]
+        for group in (words, stripped):
+            if len(group) >= 2 and 2 <= len(group) <= 5:
+                names.append("".join(w[0].upper() for w in group))
+    name_rx = re.compile("|".join(re.escape(n) for n in names), re.I) if names else None
     pages = [[l.strip() for l in t.splitlines() if l.strip()] for t in texts]
-    edge = list(range(min(2, len(pages)))) + list(range(max(2, len(pages) - 4), len(pages)))
+    edge = list(dict.fromkeys(list(range(min(2, len(pages)))) + list(range(max(2, len(pages) - 4), len(pages)))))
 
-    for p in dict.fromkeys(edge):  # opening and closing pages, where contact details live
+    def near_name(lines: list[str], i: int) -> int:
+        return 2 if name_rx and name_rx.search(" ".join(lines[max(0, i - 5): i + 1])) else 0
+
+    for p in edge:  # opening and closing pages, where contact details live
         lines = pages[p]
         for i, line in enumerate(lines):
+            bonus = near_name(lines, i)
             if m := UK_POSTCODE.search(line):
                 before = line[: m.start()]
                 city = _clean_city(re.split(r"[|,]", before)[-1]) if before.strip(" ,|") else None
@@ -90,57 +144,101 @@ def detect_location(url: str | None, texts: list[str], company: str | None = Non
                         city = _clean_city(cand)
                     k -= 1
                 if city:
-                    found.append((5, city, "United Kingdom", "address (UK postcode)"))
+                    found.append((5 + bonus, city, "United Kingdom", "address (UK postcode)"))
             elif m := ITALY.search(line):
-                found.append((5, _clean_city(m.group(1)), "Italy", "address (postcode + province)"))
+                if city := _clean_city(m.group(1)):
+                    found.append((5 + bonus, city, "Italy", "address (postcode + province)"))
             elif m := US_ZIP.search(line):
-                found.append((5, _clean_city(m.group(1)), "United States", "address (city, state ZIP)"))
-            elif (m := POSTAL_LINE.match(line)) and not re.match(r"(19|20)\\d\\d$", m.group(1)):
-                country = next((country_of(x) for x in lines[max(0, i - 3): i + 4] if country_of(x)), None)
-                vat = re.search(r"\b(?:VAT|P\.?\s?IVA|USt\.?-?Id\w*)\s*(?:No\.?|Nr\.?)?:?\s*([A-Z]{2})\d", " ".join(lines[max(0, i - 3): i + 4]))
-                found.append((4, _clean_city(m.group(2)), country or (VAT_PREFIX.get(vat.group(1)) if vat else None),
-                              "address (postcode + city)"))
+                if city := _clean_city(m.group(1)):
+                    found.append((5 + bonus, city, "United States", "address (city, state ZIP)"))
+            elif (m := POSTAL_LINE.match(line)) and not re.match(r"(19|20)\d\d$", m.group(1)):
+                around = lines[max(0, i - 3): i + 4]
+                country = next((country_of(x) for x in around if country_of(x)), None)
+                vat = re.search(r"\b(?:VAT|P\.?\s?IVA|USt\.?-?Id\w*)\s*(?:No\.?|Nr\.?)?:?\s*([A-Z]{2})\d", " ".join(around))
+                if city := _clean_city(m.group(2)):
+                    found.append((4 + bonus, city, country or (VAT_PREFIX.get(vat.group(1)) if vat else None), "address (postcode + city)"))
 
     flat = " ".join(" ".join(texts).split())
-    names = [n for n in (company, short_name) if n]
-    about_us = re.compile("|".join([re.escape(n) for n in names] + [r"\b(?:our|its|we|the group|the company)\b"]), re.I)
-    for m in HQ.finditer(flat):
-        if not about_us.search(flat[max(0, m.start() - 90): m.start()]):
-            continue  # "a theatre company based in St. Paul" is not about the reporting company
-        city, country = _classify(m.group(1), m.group(2))
-        if city and (NOT_A_CITY.search(city) or len(city) < 3):
-            continue
-        found.append((6, city, country, "headquarters sentence"))
-    for name in names:  # "Georg Fischer AG, Schaffhausen and its consolidated subsidiaries"
-        for m in re.finditer(re.escape(name) + r",\s+([A-Z][^\W\d_][\w'’ -]{2,24}?)(?=\s+(?:and|is|has|was)\b|[.;,)])", flat):
-            if (c := _clean_city(m.group(1))) and not country_of(c):
-                found.append((5, c, None, "company name followed by its seat"))
-    pair = Counter()
-    for m in re.finditer(r"\b(?:in|at)\s+([A-Z][a-zäöüéè'’-]+(?: [A-Z][a-zäöüéè'’-]+)?),\s+([A-Z][A-Za-z .]+?)(?=[\s.,;)]|$)", flat):
-        city, country = _classify(m.group(1), m.group(2))
-        if city and country:
-            pair[(city, country)] += 1
-    for (city, country), n in pair.items():
-        found.append((1 + min(n, 3) * 0, city, country, f"mentioned {n}x as '{city}, {country}'"))
+    edge_flat = " ".join(" ".join(texts[p] for p in edge).split())
+    country_rx = "|".join(re.escape(a) for a in sorted(ALIAS, key=len, reverse=True))
+    inline = re.compile(rf"\b\d{{4,6}}\s+([A-Z][^\W\d_][\w'’.-]*(?:\s[A-Z][\w'’.-]*){{0,2}}),?\s+({country_rx})\b", re.I)
+    for m in inline.finditer(edge_flat):  # "... Via Pasolini 74 20151 Milano Italy"
+        city = _clean_city(m.group(1))
+        if city and country_of(m.group(2)):
+            near = 2 if name_rx and name_rx.search(edge_flat[max(0, m.start() - 160): m.start()]) else 0
+            found.append((4 + near, city, country_of(m.group(2)), "address (postcode + city + country)"))
 
+    city, country = _office_address(flat)
+    if city:
+        found.append((6, city, country, "head office address"))
+
+    pronoun = re.compile(r"\b(?:our|its|the company['’]s|the group['’]s|the company|the group)\s+(?:[\w-]+\s+){0,2}$", re.I)
+    for m in HQ.finditer(flat):
+        before, after = flat[max(0, m.start() - 120): m.start()], flat[m.end(): m.end() + 80]
+        about_us = bool(
+            (name_rx and name_rx.search(before)) or pronoun.search(before)
+            or (name_rx and flat[m.start(): m.start() + 12].lower() == "headquartere" and name_rx.search(after))  # "Headquartered in Detroit, GM is ..."
+        )
+        if not about_us:
+            continue  # "a theatre company based in St. Paul" is not about the reporting company
+        second = m.group(3)
+        city, country = _classify(m.group(1), second)
+        if city and re.search(r"-(?:ku|cho|machi|gun)$", city, re.I):
+            continue  # a district or neighbourhood, not the city
+        if m.group(2) and not country:
+            country = "Italy"  # "Borgo Valsugana (TN)": an Italian province code
+        if city and (not _clean_city(city) or len(city) < 3):
+            continue
+        found.append((7 if city else 6, city, country, "headquarters sentence"))
+    for name in [company] if company and company != short_name else []:  # "Georg Fischer AG, Schaffhausen and its consolidated subsidiaries"
+        for m in re.finditer(re.escape(name) + r",\s+([A-Z][^\W\d_][\w'’ -]{2,24}?)(?=\s+(?:and|is|has|was)\b|[.;,)])", flat):
+            if c := _clean_city(m.group(1)):
+                found.append((5, c, None, "company name followed by its seat"))
+
+    # a city without a country may borrow one from a "City, Country" mention, but such a mention never chooses a city
+    pair_country = {}
+    for m in re.finditer(r"\b([A-Z][a-zäöüéè'’-]+(?: [A-Z][a-zäöüéè'’-]+)?),\s+([A-Z][A-Za-z .]+?)(?=[\s.,;)]|$)", flat):
+        c, k = _classify(m.group(1), m.group(2))
+        if c and k:
+            pair_country.setdefault(c, k)
+
+    if debug:
+        return sorted(found, key=lambda f: -f[0])
+
+    form = re.search(r"\b(S\.?p\.?A\.?|S\.?r\.?l\.?|Oyj|ASA|A/S|AB|PLC|plc)\W*$", company or "")
+    form_country = {"spa": "Italy", "srl": "Italy", "oyj": "Finland", "asa": "Norway", "a/s": "Denmark", "ab": "Sweden", "plc": "United Kingdom"}.get(
+        re.sub(r"[^a-z/]", "", form.group(1).lower()) if form else "")
     host = (urlsplit(url or "").hostname or "").lower().split(".")
     tld_country = TLD.get(host[-1]) if len(host) > 1 else None
     vat = re.search(r"\b(?:VAT|P\.?\s?IVA|USt\.?-?Id\w*)\s*(?:No\.?|Nr\.?)?:?\s*([A-Z]{2})\d", flat)
     vat_country = VAT_PREFIX.get(vat.group(1)) if vat else None
 
-    city_votes, country_votes = Counter(), Counter()
-    evidence = {}
-    for strength, city, country, why in found:
-        if city:
-            city_votes[city] += strength
-            evidence.setdefault(("city", city), why)
-        if country:
-            country_votes[country] += strength
-            evidence.setdefault(("country", country), why)
-    city = city_votes.most_common(1)[0][0] if city_votes else None
-    country = country_votes.most_common(1)[0][0] if country_votes else (vat_country or tld_country)
-    country_why = evidence.get(("country", country)) or ("VAT number prefix" if country == vat_country else "web address ending")
-    return {
-        "city": city, "cityEvidence": evidence.get(("city", city)),
-        "country": country, "countryEvidence": country_why if country else None,
-    }
+    groups: dict[tuple[str, str | None], tuple[int, str]] = {}
+    for strength, c, k, why in found:
+        if c and strength > groups.get((c, k), (0, ""))[0]:
+            groups[(c, k)] = (strength, why)
+    best_city = max(groups.items(), key=lambda kv: kv[1][0], default=None)  # first of equals wins: earlier evidence
+    country_only = Counter()
+    for strength, c, k, why in found:
+        if k and not c:
+            country_only[(k, why)] += strength
+
+    if best_city:
+        (city, country), (_, why) = best_city
+        country_why = why
+        if not country:
+            country = pair_country.get(city)
+            country_why = "'City, Country' mention" if country else None
+        if not country and country_only:
+            (country, country_why), _ = country_only.most_common(1)[0]
+        country = country or vat_country or form_country or tld_country
+        return {"city": city, "cityEvidence": why, "country": country,
+                "countryEvidence": country_why or ("VAT number prefix" if country == vat_country else "legal form of the company name"
+                                                   if country == form_country else "web address ending" if country else None)}
+    if country_only:
+        (country, why), _ = country_only.most_common(1)[0]
+        return {"city": None, "cityEvidence": None, "country": country, "countryEvidence": why}
+    country = vat_country or form_country or tld_country
+    return {"city": None, "cityEvidence": None, "country": country,
+            "countryEvidence": "VAT number prefix" if country == vat_country else "legal form of the company name"
+                               if country == form_country else "web address ending" if country else None}

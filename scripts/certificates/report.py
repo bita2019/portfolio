@@ -7,7 +7,7 @@ from pathlib import Path
 from pypdf import PdfReader
 
 from company import detect_company
-from dates import report_dates
+from dates import find_period
 from location import detect_location
 
 MAX_SCAN_PAGES = int(__import__("os").getenv("MAX_SCAN_PAGES", "300"))
@@ -75,16 +75,10 @@ def _scope_statement(pages: list[str]) -> dict | None:
     return None
 
 
-def _scope(pages: list[str]) -> dict:
+def _scope(pages: list[str], reporting_year: int | None = None) -> dict:
     full = "\n".join(pages)
     statement = _scope_statement(pages)
-    period = None
-    haystacks = ([statement["text"]] if statement else []) + [_unbreak(full)]
-    for hay in haystacks:
-        m = PERIOD_RANGE.search(hay) or PERIOD_YEAR.search(hay)
-        if m:
-            period = " ".join(m.group(0).split())
-            break
+    period = find_period(pages, statement["text"] if statement else None, reporting_year)
     approach, seen = [], set()
     for m in APPROACH.finditer(full):
         item = (m.group(2).upper() if m.group(2).lower() != "ghg protocol" else "GHG Protocol", m.group(1).lower())
@@ -94,7 +88,8 @@ def _scope(pages: list[str]) -> dict:
     ghg = {f"scope{n}": len(re.findall(rf"Scope\s*{n}\b", full, re.I)) for n in (1, 2, 3)}
     return {
         "statement": statement,
-        "reportingPeriod": period,
+        "reportingPeriod": period["periodText"],
+        "_period": period,
         "reportedAgainst": approach,
         "ghgScopeMentions": ghg if any(ghg.values()) else None,
     }
@@ -152,6 +147,15 @@ def _page_heading(page) -> str | None:
     return " ".join(words)[:160] or None
 
 
+def _clean_title(title: str | None) -> str | None:
+    if not title:
+        return title
+    title = re.sub(r"^[\s\-\u2013\u2014]*\d{1,3}[\s\-\u2013\u2014]+(?=[A-Za-z])", "", title)  # a page marker such as "- 1 -"
+    title = title.split("\u00a9")[0]  # "Sustainability Report © 2025 Acme" -> "Sustainability Report"
+    title = re.sub(r"\b(\w+)(\s+\1\b)+", r"\1", title, flags=re.I)  # "2024 2024 Report" -> "2024 Report"
+    return " ".join(title.split()) or None
+
+
 def _choose_title(pdf_title: str | None, heading: str | None, first_line: str | None) -> tuple[str | None, str | None]:
     """Prefer a meaningful PDF title, then the cover heading, then the first line of text."""
     if pdf_title and len(pdf_title.split()) >= 2 and not GENERIC_TITLE.match(pdf_title.strip()):
@@ -201,15 +205,17 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
 
     pdf_title = (meta.title if meta and meta.title else None) or None
     title, title_source = _choose_title(pdf_title, _page_heading(pages[0]) if len(pages) else None, first_line)
+    title = _clean_title(title)
 
-    company = detect_company(url, texts)
-    scope = _scope(texts)
+    company = detect_company(url, texts, (meta.author if meta else None) or None)
+    scope = _scope(texts, int(year.group(1)) if year else None)
+    period = scope.pop("_period")
 
     return {
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "company": company,
         "location": detect_location(url, texts, company["name"], company["shortName"]),
-        "dates": report_dates(texts, (scope["statement"] or {}).get("text")),
+        "dates": {k: period[k] for k in ("startDate", "endDate", "basis", "text")},
         "scope": scope,
         "title": title,
         "titleSource": title_source,

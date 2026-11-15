@@ -76,6 +76,7 @@ def _via_proxy(url: str) -> bool:
 def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
     """Download a PDF, following redirects manually so each hop is re-checked."""
     chain = []
+    decoded_colon = False
     session = requests.Session()
     current = url
     for _ in range(MAX_REDIRECTS + 1):
@@ -89,6 +90,10 @@ def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
             raise FetchError("The network proxy refused or could not reach this host (check its egress allowlist).", 502)
         except requests.RequestException as error:
             raise FetchError(f"Could not fetch the URL: {error.__class__.__name__}", 502)
+        if resp.status_code == 400 and "%3A" in current and not decoded_colon:
+            resp.close()  # some servers cannot read an encoded colon in the path (Siemens asset links); same resource, plain colon
+            decoded_colon, current = True, current.replace("%3A", ":")
+            continue
         if resp.is_redirect or resp.status_code in (301, 302, 303, 307, 308):
             target = resp.headers.get("Location")
             resp.close()

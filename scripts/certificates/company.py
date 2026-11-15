@@ -9,10 +9,12 @@ from urllib.parse import unquote, urlsplit
 
 LEGAL_FORMS = (
     r"plc|PLC|P\.L\.C\.|Ltd\.?|Limited|Inc\.?|Corp\.?|Corporation|LLC|GmbH(?: & Co\. KG)?|AG|SE|S\.p\.A\.?|SpA|"
-    r"S\.r\.l\.?|Srl|S\.A\.?|N\.V\.|NV|B\.V\.|AB|ASA|Oyj|A/S|KG|Co\."
+    r"S\.r\.l\.?|Srl|S\.A\.?|N\.V\.|NV|B\.V\.|AB|ASA|Oyj|A/S|KG|Co\.|Company"
 )
 LEGAL_NAME = re.compile(r"((?:[A-Z][\w&.'’-]*,?\s){1,5}?)(" + LEGAL_FORMS + r")(?=[\s,.;:)]|$)")
 WORD = re.compile(r"[A-Z][\w&'’-]*")
+GENERIC_SUBDOMAINS = {"global", "en", "us", "uk", "eu", "corporate", "about", "group", "investors", "investor", "ir", "cdn", "assets",
+                      "files", "media", "esg", "report", "reports", "sustainability", "annualreport2024", "annualreport", "static", "docs"}
 SECOND_LEVEL = {"co", "com", "org", "net", "plc", "ltd", "ac", "gov", "edu"}
 REPORT_WORDS = {"annual", "sustainability", "esg", "report", "reports", "integrated", "csr", "climate", "impact",
                 "statement", "year", "review", "interactive", "web", "final", "doc", "document", "file", "pdf"}
@@ -31,7 +33,8 @@ GENERIC_WORDS = set((
     "october november december monday tuesday wednesday thursday friday saturday sunday scope topic standard standards disclosure "
     "disclosures gri esrs csrd tcfd sasb issb cdp taxonomy product products customers suppliers supplier community communities "
     "introduction foreword overview about appendix glossary references assurance independent limited audit auditor corporate "
-    "social responsibility csr impact goals targets objectives progress results year years").split())
+    "social responsibility csr impact goals targets objectives progress results year years division divisions segment segments "
+    "business unit units subsidiary subsidiaries parent").split())
 ORG_WORDS = set((
     "group foundry foundries fonderie fonderia giesserei gießerei castings casting industries industrie holding holdings company "
     "corporation corp technologies technology automotive metals steel engineering manufacturing systems solutions products "
@@ -84,6 +87,10 @@ def host_label(url: str | None) -> str | None:
     """'www.fonderieariotti.com' -> 'fonderieariotti'; 'castings.plc.uk' -> 'castings'."""
     host = (urlsplit(url or "").hostname or "").lower()
     labels = [l for l in host.split(".") if l and l != "www"]
+    while len(labels) > 1 and labels[0] in GENERIC_SUBDOMAINS:
+        labels = labels[1:]
+    if len(labels) == 1:  # a brand domain such as "global.toyota": the single label left is the name
+        return _key(labels[0])
     if len(labels) >= 2:
         labels = labels[:-1]  # top-level domain
         if len(labels) >= 2 and labels[-1] in SECOND_LEVEL:
@@ -125,7 +132,7 @@ def _label_mentions(tokens: list[str], label: str) -> Counter:
     return found
 
 
-def detect_company(url: str | None, texts: list[str]) -> dict:
+def detect_company(url: str | None, texts: list[str], pdf_author: str | None = None) -> dict:
     label = host_label(url)
     flat = [" ".join(t.split()) for t in texts]
 
@@ -138,6 +145,8 @@ def detect_company(url: str | None, texts: list[str]) -> dict:
                 if words[i].endswith(".") and len(words[i]) > 3 and words[i].rstrip(".").lower() not in ABBREVIATIONS:
                     words = words[i + 1:]
                     break
+            if len(words) > 2 and words[0] in words[1:]:
+                words = words[len(words) - 1 - words[::-1].index(words[0]):]
             while words and words[0] in {"The", "Our", "At", "By", "For", "With"}:
                 words = words[1:]
             if words and _plausible(" ".join(words)):
@@ -162,9 +171,15 @@ def detect_company(url: str | None, texts: list[str]) -> dict:
         # the parent is the entity the report talks about: its short name recurs far more often than a subsidiary's
         subject_hits = next((n for s, n in subjects.items() if _key(s) == _key(short)), 0)
         formal = 100 if legal_raw[name] >= 3 else 0  # stated formally several times: that is the entity, not a division
-        rank = 3 * score + mentions_of(short) + 5 * subject_hits + formal + (1000 if agrees else 0)
+        rank = 3 * score + min(mentions_of(short), 100) + 5 * subject_hits + formal + (1000 if agrees else 0)
         candidates.append({"name": name, "shortName": short, "source": "content" + ("+url" if agrees else ""),
                            "mentions": score, "_rank": rank})
+    author = " ".join((pdf_author or "").split())
+    if author and re.search(r"\s(?:" + LEGAL_FORMS + r")$", author) and _plausible(_strip_legal(author)):
+        short = _strip_legal(author)  # a company named in the PDF's own author field is rarely wrong
+        agrees = bool(label) and _key(short).startswith(label)
+        candidates.append({"name": author, "shortName": short, "source": "pdf author" + ("+url" if agrees else ""),
+                           "mentions": None, "_rank": 400 + (1000 if agrees else 0)})
     for name, count in subjects.items():
         if count >= 2 and not any(_key(c["shortName"]) == _key(name) for c in candidates):
             agrees = bool(label) and _key(name).startswith(label)
@@ -181,6 +196,22 @@ def detect_company(url: str | None, texts: list[str]) -> dict:
         candidates.append({"name": label.capitalize(), "shortName": label.capitalize(), "source": "url",
                            "mentions": None, "_rank": 10})
 
+    if label:  # the exact name the domain spells beats a longer, unsuffixed name that merely starts with it ("Baettr" vs "Baettr Tianjin")
+        exact = [x for x in candidates if _key(x["shortName"]) == label and x["source"].endswith("+url") and x["name"] == x["shortName"]]
+        if exact:
+            for x in candidates:
+                if x["name"] == x["shortName"] and _key(x["name"]).startswith(label) and _key(x["name"]) != label:
+                    x["_rank"] -= 900
+    for abbr in [x for x in candidates if x["name"].isupper() and 2 <= len(x["name"]) <= 5 and " " not in x["name"]]:
+        for full in candidates:
+            words = full["name"].split()
+            initials = "".join(w[0].upper() for w in words if w[0].isalpha())
+            without_form = "".join(w[0].upper() for w in _strip_legal(full["name"]).split() if w[0].isalpha())
+            if full is not abbr and abbr["name"] in (initials, without_form) and full["mentions"]:
+                full["_rank"] = max(full["_rank"], abbr["_rank"] + 1)  # "Commercial Metals Company" is what "CMC" stands for
+                full["source"] = "content+url" if "+url" in abbr["source"] else full["source"]
+                break
+
     if not candidates:
         return {"name": None, "shortName": None, "source": None, "confidence": None, "candidates": []}
     candidates.sort(key=lambda c: -c["_rank"])
@@ -196,7 +227,7 @@ def detect_company(url: str | None, texts: list[str]) -> dict:
                             and _key(x["shortName"]) == _key(best["name"])), None)
         if legal_match:
             best = {**best, "name": legal_match["name"]}
-    confidence = "high" if "content+url" in best["source"] or "+url" in best["source"] else (
+    confidence = "high" if "+url" in best["source"] else (
         "medium" if best["source"] == "content" and (best["mentions"] or 0) >= 3 else "low")
     return {
         "name": best["name"], "shortName": best["shortName"], "source": best["source"], "confidence": confidence,
