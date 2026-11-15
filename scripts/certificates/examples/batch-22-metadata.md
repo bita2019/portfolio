@@ -1,6 +1,6 @@
 # Report metadata
 
-Generated 2026-11-15 00:25 UTC by `extract_metadata.py`. 20 of 22 PDFs were read.
+Generated 2026-11-15 00:30 UTC by `extract_metadata.py`. 20 of 22 PDFs were read.
 
 | # | Company name | Country | City | Author or issuer | Title of report | Reporting period | Start date | End date |
 |---|---|---|---|---|---|---|---|---|
