@@ -117,3 +117,33 @@ def test_an_encoded_colon_is_retried_once_with_a_plain_colon():
         path, info = fetch.download("https://assets.example.com/api/uuid%3Aabc/x.pdf", d)
     assert calls == ["https://assets.example.com/api/uuid%3Aabc/x.pdf", "https://assets.example.com/api/uuid:abc/x.pdf"]
     assert info["finalUrl"].endswith("uuid:abc/x.pdf")
+
+
+def test_a_dropped_connection_is_retried(tmp_path):
+    import requests
+
+    attempts = []
+
+    def flaky_get(self, url, **kwargs):
+        attempts.append(url)
+        if len(attempts) < 3:
+            raise requests.ConnectionError("reset")
+        resp = mock.MagicMock(is_redirect=False, status_code=200, headers={"Content-Type": "application/pdf"})
+        resp.iter_content = lambda n: iter([b"%PDF-1.4 x"])
+        resp.__enter__ = lambda s: s
+        resp.__exit__ = lambda *a: None
+        return resp
+
+    with mock.patch("fetch.requests.Session.get", flaky_get), mock.patch("fetch.check_url"), mock.patch("fetch.time.sleep") as nap:
+        path, info = fetch.download("https://example.com/a.pdf", tmp_path)
+    assert len(attempts) == 3 and nap.call_count == 2 and path.exists()
+
+
+def test_a_connection_that_never_recovers_fails_cleanly(tmp_path):
+    import requests
+
+    with mock.patch("fetch.requests.Session.get", side_effect=requests.ConnectionError("down")), \
+         mock.patch("fetch.check_url"), mock.patch("fetch.time.sleep"):
+        with pytest.raises(fetch.FetchError) as error:
+            fetch.download("https://example.com/a.pdf", tmp_path)
+    assert error.value.status == 502 and "ConnectionError" in str(error.value)

@@ -10,6 +10,7 @@ import os
 import posixpath
 import re
 import socket
+import time
 from pathlib import Path
 from urllib.parse import parse_qsl, unquote, urlencode, urljoin, urlsplit, urlunsplit
 
@@ -81,15 +82,21 @@ def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
     current = url
     for _ in range(MAX_REDIRECTS + 1):
         check_url(current)
-        try:
-            resp = session.get(current, stream=True, allow_redirects=False, timeout=TIMEOUT,
-                               headers={"User-Agent": USER_AGENT, "Accept": "application/pdf,*/*;q=0.5"})
-        except requests.Timeout:
-            raise FetchError("Timed out fetching the URL.", 504)
-        except requests.exceptions.ProxyError:
-            raise FetchError("The network proxy refused or could not reach this host (check its egress allowlist).", 502)
-        except requests.RequestException as error:
-            raise FetchError(f"Could not fetch the URL: {error.__class__.__name__}", 502)
+        for attempt in range(3):  # a dropped connection is retried (2 s, 4 s) before giving up
+            try:
+                resp = session.get(current, stream=True, allow_redirects=False, timeout=TIMEOUT,
+                                   headers={"User-Agent": USER_AGENT, "Accept": "application/pdf,*/*;q=0.5"})
+                break
+            except requests.exceptions.ProxyError:
+                raise FetchError("The network proxy refused or could not reach this host (check its egress allowlist).", 502)
+            except (requests.Timeout, requests.ConnectionError, requests.exceptions.ChunkedEncodingError) as error:
+                if attempt == 2:
+                    if isinstance(error, requests.Timeout):
+                        raise FetchError("Timed out fetching the URL.", 504)
+                    raise FetchError(f"Could not fetch the URL: {error.__class__.__name__}", 502)
+                time.sleep(2 * (attempt + 1))
+            except requests.RequestException as error:
+                raise FetchError(f"Could not fetch the URL: {error.__class__.__name__}", 502)
         if resp.status_code == 400 and "%3A" in current and not decoded_colon:
             resp.close()  # some servers cannot read an encoded colon in the path (Siemens asset links); same resource, plain colon
             decoded_colon, current = True, current.replace("%3A", ":")
