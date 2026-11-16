@@ -9,7 +9,15 @@
     python extract_metadata.py --urls urls.txt                   # URLs, one per line
     python extract_metadata.py pdf_folder --urls urls.txt -o results/metadata
 
-Writes <out>.json, <out>.xlsx and <out>.md (default <out> is "metadata"). One row per PDF:
+Writes <out>.json, <out>.xlsx, <out>.md and <out>.mongo.json (default <out> is "metadata").
+With --mongo (or --mongo-uri) the same records are also upserted into MongoDB, one document per report, keyed on "url":
+
+    {"url", "companyName", "country", "city", "authorOrIssuer", "authorOrIssuerRole", "reportTitle", "startDate", "endDate"}
+
+    export MONGODB_URI="mongodb+srv://user:password@cluster.example.mongodb.net"
+    python extract_metadata.py pdf_folder --urls urls.txt --mongo --mongo-db reports --mongo-collection report_metadata
+
+A local PDF is stored with its file:// address as "url". A PDF that could not be read is not written to MongoDB. One row per PDF:
 company name, country, city, author or issuer, title of report, reporting period, start date, end date, notes.
 Start and end dates are filled only when the report states them; nothing is inferred.
 A PDF that cannot be read does not stop the run: it gets status "not read" and the reason in its notes.
@@ -17,6 +25,7 @@ A PDF that cannot be read does not stop the run: it gets status "not read" and t
 import argparse
 import json
 import logging
+import os
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -33,6 +42,7 @@ FIELDS = [("companyName", "Company name"), ("country", "Country"), ("city", "Cit
           ("reportTitle", "Title of report"), ("reportingPeriod", "Reporting period"),
           ("startDate", "Start date"), ("endDate", "End date")]
 FONT = "Arial"
+CONTRACT_KEYS = ["url", "companyName", "country", "city", "authorOrIssuer", "authorOrIssuerRole", "reportTitle", "startDate", "endDate"]
 
 
 def is_url(text: str) -> bool:
@@ -68,6 +78,25 @@ def extract_one(kind: str, value: str) -> dict:
         return {**entry, "status": "read", **summarize(result)}
     except Exception as error:  # one bad PDF must not stop the other 26
         return {**entry, "status": "not read", **{k: None for k, _ in FIELDS}, "notes": [str(error) or error.__class__.__name__]}
+
+
+def to_contract(entry: dict) -> dict:
+    """One record in the MongoDB data contract. A local PDF is identified by its file:// address."""
+    doc = {key: entry[key] for key in CONTRACT_KEYS if key != "url"}
+    url = entry["url"] or Path(entry["file"]).expanduser().resolve().as_uri()
+    return {"url": url, **doc}
+
+
+def write_mongo(entries: list[dict], collection) -> dict:
+    """Upsert every report that was read, keyed on url (running it again updates instead of duplicating)."""
+    docs = [to_contract(e) for e in entries if e["status"] == "read"]
+    collection.create_index("url", unique=True)
+    inserted = updated = 0
+    for doc in docs:
+        result = collection.replace_one({"url": doc["url"]}, doc, upsert=True)
+        inserted += result.upserted_id is not None
+        updated += result.upserted_id is None and result.modified_count > 0
+    return {"written": len(docs), "inserted": inserted, "updated": updated, "skipped": len(entries) - len(docs)}
 
 
 def _md(value) -> str:
@@ -157,8 +186,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--urls", metavar="FILE", help="text file with one URL per line (# starts a comment)")
     ap.add_argument("-o", "--out", default="metadata", metavar="BASE", help="output path without extension (default: metadata)")
     ap.add_argument("-r", "--recursive", action="store_true", help="also look in sub-folders of a folder")
+    ap.add_argument("--mongo", action="store_true", help="also write the records to MongoDB (connection string from $MONGODB_URI)")
+    ap.add_argument("--mongo-uri", metavar="URI", help="MongoDB connection string (implies --mongo)")
+    ap.add_argument("--mongo-db", default=os.getenv("MONGODB_DB", "portfolio"), help="database name (default: portfolio, or $MONGODB_DB)")
+    ap.add_argument("--mongo-collection", default=os.getenv("MONGODB_COLLECTION", "report_metadata"),
+                    help="collection name (default: report_metadata, or $MONGODB_COLLECTION)")
     args = ap.parse_args(argv)
 
+    mongo_uri = args.mongo_uri or (os.getenv("MONGODB_URI") if args.mongo else None)
+    if (args.mongo or args.mongo_uri) and not mongo_uri:
+        ap.error("--mongo needs a connection string: set $MONGODB_URI or pass --mongo-uri")
     items = gather(args.sources, args.urls, args.recursive)
     if not items:
         ap.error("nothing to do: give PDF files, a folder, URLs, or --urls FILE")
@@ -174,8 +211,18 @@ def main(argv: list[str] | None = None) -> int:
     base.with_suffix(".json").write_text(json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8")
     to_xlsx(entries, base.with_suffix(".xlsx"))
     base.with_suffix(".md").write_text(to_markdown(entries), encoding="utf-8")
+    contract = [to_contract(e) for e in entries if e["status"] == "read"]
+    base.with_suffix(".mongo.json").write_text(json.dumps(contract, indent=2, ensure_ascii=False), encoding="utf-8")
     read = sum(e["status"] == "read" for e in entries)
-    print(f"\n{read} of {len(entries)} read. Wrote {base.with_suffix('.json')}, {base.with_suffix('.xlsx')}, {base.with_suffix('.md')}")
+    print(f"\n{read} of {len(entries)} read. Wrote {base.with_suffix('.json')}, {base.with_suffix('.xlsx')}, {base.with_suffix('.md')}, "
+          f"{base.with_suffix('.mongo.json')}")
+    if mongo_uri:
+        from pymongo import MongoClient
+
+        with MongoClient(mongo_uri, serverSelectionTimeoutMS=15000) as client:
+            summary = write_mongo(entries, client[args.mongo_db][args.mongo_collection])
+        print(f"MongoDB {args.mongo_db}.{args.mongo_collection}: {summary['inserted']} inserted, {summary['updated']} updated, "
+              f"{summary['skipped']} not written (could not be read)")
     return 0
 
 

@@ -65,3 +65,43 @@ def test_company_without_a_url_prefers_the_subject_over_headings_and_ignores_cod
 def test_formal_legal_name_beats_a_frequent_division():
     text = "Flow Solutions grew. Flow Solutions is global. " * 10 + "Georg Fischer AG is headquartered in Switzerland. Georg Fischer AG, Schaffhausen. Georg Fischer AG."
     assert detect_company(None, [text])["name"] == "Georg Fischer AG"
+
+
+def test_mongo_documents_follow_the_data_contract(tmp_path):
+    import mongomock
+
+    pdfs = tmp_path / "pdfs"
+    pdfs.mkdir()
+    make_pdf(pdfs / "cert.pdf", TUV)
+    (pdfs / "broken.pdf").write_text("not a pdf")
+    entries = [cli.extract_one("file", str(p)) for p in sorted(pdfs.glob("*.pdf"))]
+    entries.append({**entries[1], "url": "https://example.com/report.pdf", "file": None})  # a URL entry, same record
+
+    collection = mongomock.MongoClient()["reports"]["report_metadata"]
+    first = cli.write_mongo(entries, collection)
+    assert first == {"written": 2, "inserted": 2, "updated": 0, "skipped": 1}  # the broken PDF is not written
+    docs = {d["url"]: d for d in collection.find({}, {"_id": 0})}
+    assert set(docs) == {(pdfs / "cert.pdf").resolve().as_uri(), "https://example.com/report.pdf"}
+    doc = docs["https://example.com/report.pdf"]
+    assert list(doc) == cli.CONTRACT_KEYS  # exactly the agreed keys, in order
+    assert doc["companyName"] == "Acme Castings GmbH" and doc["startDate"] == "2024-05-22" and doc["endDate"] == "2027-05-21"
+    assert isinstance(doc["startDate"], str)
+
+    again = cli.write_mongo(entries, collection)  # running it again must not duplicate
+    assert collection.count_documents({}) == 2 and again["inserted"] == 0
+
+
+def test_cli_writes_the_contract_file_and_reads_a_file_or_a_url_list(tmp_path):
+    pdf = make_pdf(tmp_path / "one.pdf", TUV)
+    out = tmp_path / "out" / "m"
+    assert cli.main([str(pdf), "-o", str(out)]) == 0
+    contract = json.loads(out.with_suffix(".mongo.json").read_text())
+    assert [list(d) for d in contract] == [cli.CONTRACT_KEYS] and contract[0]["url"] == pdf.resolve().as_uri()
+
+
+def test_mongo_flag_without_a_connection_string_is_an_error(tmp_path, monkeypatch):
+    import pytest
+
+    monkeypatch.delenv("MONGODB_URI", raising=False)
+    with pytest.raises(SystemExit):
+        cli.main([str(make_pdf(tmp_path / "x.pdf", TUV)), "--mongo"])

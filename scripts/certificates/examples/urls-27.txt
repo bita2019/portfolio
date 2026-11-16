@@ -1,0 +1,29 @@
+# The 26 URLs as supplied (the Waupaca one is the old address and no longer returns a PDF),
+# plus Waupaca's relocated report at the end.
+https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com
+https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf
+https://waupacafoundry.com/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf
+https://castings.plc.uk/media/q4fdrmg3/castings-plc-sustainability-report-2024-interactive.pdf
+https://baettr.com/wp-content/uploads/2025/03/Sustainability-Report-2023-1.pdf
+https://www.matfoundrygroup.com/res/Group%20ESG%20Report%202023%202024-12-17.pdf
+https://www.feintool.com/wp-content/uploads/2025/05/FEI_001-NHB-2024_EN.pdf_web.pdf
+https://www.ufifilters.com/wp-content/uploads/downloads/pdfs/Sustainability_Report_2024/UFI_Sustainability_Report_2024.pdf
+https://www.kongsbergautomotive.com/globalassets/investor-relations/ir-downloads/sustainability-reports/ka_sustainability_report_2023.pdf
+https://www.adraxles.com/gallery/adr-group-sustainability-report-2024def.pdf
+https://borgautomotive-group.com/media/e5smim2i/esg-report-2024.pdf
+https://cdn.arcelormittal.com/media/tftkqzrq/2024-sustainability-report.pdf
+https://www.nipponsteel.com/en/sustainability/report/pdf/report2023en.pdf
+https://esg.cmc.com/wp-content/uploads/CMC-ESG-Report-2024.pdf
+https://www.kaiseraluminum.com/files/misc/2024_Sustainability_Report.pdf
+https://www.acciaierievenete.com/sites/default/files/bilanci-sostenibilita/file/Acciaierie-Venete_Sustainability-Report_2023_0.pdf
+https://www.cnh.com/-/media/CNHi/cnhicorporate/Sustainability/sustainability_reports/docs/CNH_Sustainability_2024_web.pdf
+https://assets.new.siemens.com/siemens/assets/api/uuid%3A32a7154d-edba-47bc-8e9b-9761617ba774/sustainability-report.pdf
+https://files.chartindustries.com/ChartSustainabilityReport.pdf
+https://www.hyundai-ce.com/upload/files/2025/07/69666278-9f3a-48be-b095-fd7ef3a5e709.pdf
+https://www.makita.biz/sustainability/report/files/report/Environmental_report_2024.pdf
+https://annualreport2024.volkswagen-group.com/_assets/downloads/esrs-sustainability-report-vw-ar24.pdf
+https://www.stellantis.com/content/dam/stellantis-corporate/sustainability/esg-disclosures/Stellantis-Expanded-Sustainability-Statement-2024.pdf
+https://global.toyota/pages/global_toyota/sustainability/report/sdb/sdb24_en.pdf
+https://www.gm.com/content/dam/company/docs/us/en/gmcom/company/GM_2023_SR.pdf
+https://www.nissan-global.com/EN/SUSTAINABILITY/LIBRARY/SR/2024/ASSETS/PDF/DB24_E_All.pdf
+https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US
