@@ -121,12 +121,12 @@ def is_pdf_link(link: str) -> bool:
     return path.endswith(".pdf") or ".pdf?" in link.lower() or "/asset.pdf" in path
 
 
-def find_candidates(url: str, get_page=fetch_page) -> list[tuple[int, str, str]]:
-    """Crawl the company's site and return [(score, pdf url, link text)] best first."""
+def crawl(url: str, get_page=fetch_page) -> dict:
+    """Crawl the company's site: {"candidates": [(score, pdf url, link text)] best first, "fetched": pages read, "blocked": pages refused}."""
     hint = hint_from(url)
     site = registrable_domain(urlsplit(url).hostname or "")
     queue = deque((p, 0) for p in start_pages(url))
-    seen, pdfs, fetched = set(), {}, 0
+    seen, pdfs, fetched, blocked = set(), {}, 0, 0
     while queue and fetched < MAX_PAGES:
         page, depth = queue.popleft()
         if page in seen:
@@ -134,7 +134,8 @@ def find_candidates(url: str, get_page=fetch_page) -> list[tuple[int, str, str]]
         seen.add(page)
         try:
             html, final = get_page(page)
-        except FetchError:
+        except FetchError as error:
+            blocked += "HTTP 403" in str(error) or "HTTP 401" in str(error)
             continue
         fetched += 1
         for link, text in extract_links(html, final):
@@ -148,7 +149,11 @@ def find_candidates(url: str, get_page=fetch_page) -> list[tuple[int, str, str]]
                     (queue.appendleft if REPORT_WORDS.search(f"{link} {text}") else queue.append)((link, depth + 1))
     ranked = sorted(((s, u, t) for u, (s, t) in pdfs.items()), key=lambda r: -r[0])
     minimum = 6 if hint["year"] else 3
-    return [r for r in ranked if r[0] >= minimum]
+    return {"candidates": [r for r in ranked if r[0] >= minimum], "fetched": fetched, "blocked": blocked}
+
+
+def find_candidates(url: str, get_page=fetch_page) -> list[tuple[int, str, str]]:
+    return crawl(url, get_page)["candidates"]
 
 
 def looks_like_the_report(pdf_path: Path, hint: dict) -> bool:
@@ -167,7 +172,12 @@ def looks_like_the_report(pdf_path: Path, hint: dict) -> bool:
 
 def discover_report(url: str, dest_dir: str | Path, get_page=fetch_page, fetch_pdf=download) -> tuple[Path, dict, str]:
     """Return (pdf path, fetch info, official url) for the report, or raise FetchError saying exactly what happened."""
-    candidates = find_candidates(url, get_page)
+    found = crawl(url, get_page)
+    candidates = found["candidates"]
+    if not candidates and found["fetched"] == 0 and found["blocked"]:
+        raise FetchError("The company's website refuses automated access (HTTP 403 on its own pages), so the report could not be located "
+                         "automatically. That does not mean the report is unavailable: find it on the company's publications page in a browser "
+                         "and run the extractor on the downloaded PDF.", 403)
     if not candidates:
         raise FetchError("The link does not work and no matching report was found on the company's website.", 404)
     hint = hint_from(url)

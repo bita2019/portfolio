@@ -120,3 +120,13 @@ def test_links_are_read_from_anchors_and_resolved(tmp_path):
     html = '<a href="/a.pdf">First</a> <a href="docs/b.pdf?x=1">Second <b>report</b></a> <a href="#top">skip</a> <a href="mailto:x@y.z">m</a>'
     assert discover.extract_links(html, "https://example.com/sustainability/") == [
         ("https://example.com/a.pdf", "First"), ("https://example.com/sustainability/docs/b.pdf?x=1", "Second report")]
+
+
+def test_a_site_that_refuses_automated_access_is_reported_as_blocked_not_as_missing():
+    def refuse(url):
+        raise FetchError("The server answered HTTP 403.", 502)
+
+    with pytest.raises(FetchError) as error:
+        discover.discover_report("https://www.example.com/a/Sustainability_Report_2024.pdf", "/tmp", get_page=refuse)
+    assert error.value.status == 403
+    assert "refuses automated access" in str(error.value) and "does not mean the report is unavailable" in str(error.value)

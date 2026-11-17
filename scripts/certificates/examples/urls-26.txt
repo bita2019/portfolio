@@ -1,5 +1,4 @@
-# The 26 URLs as supplied (the Waupaca one is the old address and no longer returns a PDF),
-# plus Waupaca's relocated report at the end.
+# The 26 report URLs exactly as supplied. A link that fails is searched for on the company's own website.
 https://www.georgfischer.com/content/dam/commonassets/corp/documents/reports/annual-report/annual-report-2024/en/sustainability-statement-2024-en.pdf?utm_source=chatgpt.com
 https://www.fonderieariotti.com/wp-content/uploads/Doc-04-03-EN-Report-sostenibilita-2024.pdf
 https://waupacafoundry.com/getmedia/31421a40-9111-4b3e-abcd-078849f3014c/WF_Sustainability_Report_2024_web_FNL.pdf
@@ -26,4 +25,3 @@ https://www.stellantis.com/content/dam/stellantis-corporate/sustainability/esg-d
 https://global.toyota/pages/global_toyota/sustainability/report/sdb/sdb24_en.pdf
 https://www.gm.com/content/dam/company/docs/us/en/gmcom/company/GM_2023_SR.pdf
 https://www.nissan-global.com/EN/SUSTAINABILITY/LIBRARY/SR/2024/ASSETS/PDF/DB24_E_All.pdf
-https://waupacafoundry.com/getContentAsset/409f4a47-548b-4e10-9c93-6215810e3015/53ffd608-340f-457b-b656-6b8cc0000bd4/WF_Sustainability_Report_2024_web_FNL-(1).pdf?language=en-US
