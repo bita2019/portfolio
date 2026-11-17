@@ -139,10 +139,10 @@ def _page_heading(page) -> str | None:
     words = " ".join(text for _, text in chunks[first: last + 1] if True).split()
     end = last
     # A cover title is often split into blocks ("ESG" / "REPORT" / "2024"): take a short continuation when the heading is tiny
-    tails = {"report", "reports", "statement", "review", "summary", "update", "databook", "data", "book"}
+    tail = re.compile(r"(?:[\w&]+\s+){0,2}(?:reports?|statement|review|summary|update|data\s?book|databook)", re.I)
     # A cover title is often split into blocks ("ESG" / "REPORT" / "2024"): continue a one-word heading, or one ending in a title word
     while end + 1 < len(chunks) and len(chunks[end + 1][1]) <= 25 and end - last < 2 and (
-        len(words) < 2 or chunks[end + 1][1].lower() in tails
+        len(words) < 2 or tail.fullmatch(chunks[end + 1][1].strip())
     ):
         end += 1
         words += chunks[end][1].split()
