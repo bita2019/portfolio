@@ -14,7 +14,7 @@ _ORD = r"(?:\s?(?:st|nd|rd|th))?"
 _DAY_MONTH = rf"(?:\d{{1,2}}{_ORD}\s+(?:{_M})|(?:{_M})\s+\d{{1,2}}{_ORD})"
 _NUMERIC = r"(?:\d{1,2}\.\d{1,2}\.\d{4}|\d{4}-\d{2}-\d{2})"
 _FULL = rf"(?:{_DAY_MONTH},?\s+\d{{4}}|{_NUMERIC})"
-_SEP = r"\s*,?\s*(?:-|–|—|to|until|through)\s*"
+_SEP = r"\s*,?\s*(?:-|–|—|(?:up\s+)?to(?:\s+and\s+including)?|until|through(?:\s+and\s+(?:as\s+of|including))?)\s*"
 _MONTH_YEAR = rf"(?:{_M})\s+\d{{4}}"
 
 RANGE = re.compile(rf"(?P<a>{_FULL}|{_DAY_MONTH}){_SEP}(?P<b>{_FULL})", re.I)
