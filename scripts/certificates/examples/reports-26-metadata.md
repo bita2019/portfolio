@@ -1,6 +1,6 @@
 # Report metadata
 
-Generated 2026-11-17 20:12 UTC by `extract_metadata.py`. 24 of 26 PDFs were read.
+Generated 2026-11-17 20:16 UTC by `extract_metadata.py`. 24 of 26 PDFs were read.
 
 | # | Company name | Country | City | Author or issuer | Title of report | Reporting period | Start date | End date |
 |---|---|---|---|---|---|---|---|---|
@@ -17,7 +17,7 @@ Generated 2026-11-17 20:12 UTC by `extract_metadata.py`. 24 of 26 PDFs were read
 | 11 | BORG Automotive Group | Denmark | Silkeborg | BORG Automotive Group (issuer) | ESG REPORT 2024 | 2024 FINANCIAL YEAR | — | — |
 | 12 | — | — | — | — | — | — | — | — |
 | 13 | Nippon Steel Corporation | Japan | Tokyo | Nippon Steel Corporation (issuer) | 日本製鉄株式会社 サステナビリティレポート2023 英語版 | April 2022 to March 2023 | 2022-04-01 | 2023-03-31 |
-| 14 | Commercial Metals Company | United States | Irving | Commercial Metals Company (issuer) | 2024 | September 1, 2023 to August 31, 2024 | 2023-09-01 | 2024-08-31 |
+| 14 | Commercial Metals Company | United States | Irving | Commercial Metals Company (issuer) | 2024 Sustainability Report | September 1, 2023 to August 31, 2024 | 2023-09-01 | 2024-08-31 |
 | 15 | Kaiser Aluminum | United States | Franklin | Kaiser Aluminum (issuer) | Sustainability Report | January 1, 2024, through and as of December 31, 2024 | 2024-01-01 | 2024-12-31 |
 | 16 | Acciaierie Venete S.p.A | Italy | Borgo Valsugana | Acciaierie Venete S.p.A (issuer) | 2023 SUSTAINABILITY REPORT | year ended 31 December 2023 | 2023-01-01 | 2023-12-31 |
 | 17 | CNH Industrial NV | United States | Oak Brook | CNH Industrial NV (issuer) | SUSTAINABILITY REPORT 2024 | calendar year 2024 | 2024-01-01 | 2024-12-31 |
