@@ -140,7 +140,7 @@ def _label_mentions(tokens: list[str], label: str) -> Counter:
     return found
 
 
-def detect_company(url: str | None, texts: list[str], pdf_author: str | None = None) -> dict:
+def detect_company(url: str | None, texts: list[str]) -> dict:
     label = host_label(url)
     flat = [" ".join(t.split()) for t in texts]
 
@@ -182,12 +182,6 @@ def detect_company(url: str | None, texts: list[str], pdf_author: str | None = N
         rank = 3 * score + min(mentions_of(short), 100) + 5 * subject_hits + formal + (1000 if agrees else 0)
         candidates.append({"name": name, "shortName": short, "source": "content" + ("+url" if agrees else ""),
                            "mentions": score, "_rank": rank})
-    author = " ".join((pdf_author or "").split())
-    if author and re.search(r"\s(?:" + LEGAL_FORMS + r")$", author) and _plausible(_strip_legal(author)):
-        short = _strip_legal(author)  # a company named in the PDF's own author field is rarely wrong
-        agrees = bool(label) and _key(short).startswith(label)
-        candidates.append({"name": author, "shortName": short, "source": "pdf author" + ("+url" if agrees else ""),
-                           "mentions": None, "_rank": 400 + (1000 if agrees else 0)})
     for name, count in subjects.items():
         # a phrase that is only ever a sentence subject needs to look like an organisation ("... Group", "... Foundry") or recur often
         looks_like_org = any(w.lower() in ORG_WORDS for w in name.split())

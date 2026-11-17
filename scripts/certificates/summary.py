@@ -3,13 +3,9 @@ import re
 
 from location import country_of
 
-GENERIC_AUTHOR = re.compile(r"^(admin(istrator)?|user|owner|author|unknown|microsoft.*|adobe.*|windows.*|pc|laptop|acrobat.*|word|ps|none)$", re.I)
-
-
-def _author(document: dict, company: str | None) -> tuple[str | None, str | None]:
-    author = (document.get("author") or "").strip()
-    if len(author) >= 3 and re.search(r"[A-Za-z]", author) and not GENERIC_AUTHOR.match(author):
-        return author, "author"
+def _issuer(company: str | None) -> tuple[str | None, str | None]:
+    """Only the report itself can name an author. The PDF's author field is software or an employee's name, so it is not
+    used: the issuer is the company that published the report."""
     return company, "issuer" if company else None
 
 
@@ -35,7 +31,7 @@ def summarize(full: dict) -> dict:
 
     d = full["document"]
     company, loc, dates = d["company"], d["location"], d["dates"]
-    author, role = _author(d, company["name"])
+    author, role = _issuer(company["name"])
     if company["confidence"] != "high":
         notes.append(f"company name: {company['confidence']} confidence ({company['source']})")
     if not loc["country"]:
@@ -44,13 +40,11 @@ def summarize(full: dict) -> dict:
         notes.append(f"country taken from the {loc['countryEvidence']}")
     if not loc["city"]:
         notes.append("city not found")
-    if role == "author":
-        notes.append("author is the PDF's author field")
-    if dates["basis"] == "only the end date is stated":
-        notes.append(f"start date not stated; end date from \"{dates['text']}\"")
-    elif dates["basis"] != "stated":
+    if dates["basis"].startswith("end date stated"):
+        notes.append(f"start date is the first day of the 12-month year the report states: \"{dates['text']}\"")
+    elif dates["startDate"] is None:
         notes.append("start and end date " + dates["basis"])
-    if d["titleSource"] not in ("pdf-metadata", "first-page-heading"):
+    if not d["titleSource"].startswith(("pdf-metadata", "first-page-heading")):
         notes.append(f"title taken from {d['titleSource']}")
     return {
         "companyName": company["name"], "country": loc["country"], "city": loc["city"],

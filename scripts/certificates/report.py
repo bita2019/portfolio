@@ -156,10 +156,11 @@ def _clean_title(title: str | None) -> str | None:
     return " ".join(title.split()) or None
 
 
-def _choose_title(pdf_title: str | None, heading: str | None, first_line: str | None) -> tuple[str | None, str | None]:
+def _choose_title(pdf_title: str | None, heading: str | None, first_line: str | None, opening_text: str = "") -> tuple[str | None, str | None]:
     """Prefer a meaningful PDF title, then the cover heading, then the first line of text."""
-    if pdf_title and len(pdf_title.split()) >= 2 and not GENERIC_TITLE.match(pdf_title.strip()):
-        return pdf_title.strip(), "pdf-metadata"
+    key = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())
+    if pdf_title and len(pdf_title.split()) >= 2 and not GENERIC_TITLE.match(pdf_title.strip()) and key(pdf_title) in key(opening_text):
+        return pdf_title.strip(), "pdf-metadata (also printed in the report)"  # a file property only counts when the report itself says it
     if heading:
         return heading, "first-page-heading"
     if first_line:
@@ -204,10 +205,10 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
         pass
 
     pdf_title = (meta.title if meta and meta.title else None) or None
-    title, title_source = _choose_title(pdf_title, _page_heading(pages[0]) if len(pages) else None, first_line)
+    title, title_source = _choose_title(pdf_title, _page_heading(pages[0]) if len(pages) else None, first_line, " ".join(texts[:2]))
     title = _clean_title(title)
 
-    company = detect_company(url, texts, (meta.author if meta else None) or None)
+    company = detect_company(url, texts)
     scope = _scope(texts, int(year.group(1)) if year else None)
     period = scope.pop("_period")
 

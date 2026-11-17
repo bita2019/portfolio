@@ -188,7 +188,8 @@ def _titled_pdf(path, metadata_title=None):
     (None, "Engineering a sustainable future 2024", "first-page-heading"),
     ("Microsoft Word - report_final.docx", "Engineering a sustainable future 2024", "first-page-heading"),
     ("Engineering", "Engineering a sustainable future 2024", "first-page-heading"),
-    ("Castings plc Sustainability Report 2024", "Castings plc Sustainability Report 2024", "pdf-metadata"),
+    ("Castings plc Sustainability Report 2024", "Engineering a sustainable future 2024", "first-page-heading"),  # not printed in the report
+    ("Engineering a sustainable future 2024", "Engineering a sustainable future 2024", "pdf-metadata (also printed in the report)"),
 ])
 def test_title_selection(tmp_path, meta, expected, source):
     from report import extract_document

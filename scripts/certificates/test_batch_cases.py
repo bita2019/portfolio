@@ -70,9 +70,9 @@ def test_an_abbreviation_is_replaced_by_the_name_it_stands_for():
     assert detect_company("https://esg.cmc.com/x.pdf", [text])["name"] == "Commercial Metals Company"
 
 
-def test_pdf_author_with_a_legal_form_is_a_strong_candidate():
+def test_company_comes_from_the_report_text_not_from_the_pdf_properties():
     text = "Toyota Inc. appears once. " + "Toyota Motor Corporation reported results. " * 3
-    assert detect_company("https://global.toyota/x.pdf", [text], "Toyota Motor Corporation")["name"] == "Toyota Motor Corporation"
+    assert detect_company("https://global.toyota/x.pdf", [text])["name"] == "Toyota Motor Corporation"
 
 
 def test_repeated_first_word_cuts_a_garbled_legal_name():
