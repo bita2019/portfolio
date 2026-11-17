@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from extract import extract_certificate
+from discover import discover_report
 from fetch import FetchError, download, url_metadata
 from report import extract_document
 
@@ -60,8 +61,27 @@ def analyze_pdf(path: str | Path, url: str | None = None, now: datetime | None =
     return result
 
 
-def process(url: str, now: datetime | None = None) -> dict:
-    """Download a PDF from a URL (with SSRF protection) and extract everything from it."""
+def _worth_searching(error: FetchError) -> bool:
+    """A server refusal or a non-PDF page says nothing about whether the report exists, so look for it on the company's site."""
+    text = str(error)
+    return "The server answered HTTP" in text or "did not return a PDF" in text
+
+
+def process(url: str, now: datetime | None = None, discover: bool = True) -> dict:
+    """Download a PDF from a URL (with SSRF protection) and extract everything from it.
+
+    If the link fails, the company's own website is searched for the report before giving up (discover=False turns that off).
+    """
     with tempfile.TemporaryDirectory() as tmp:
-        path, fetched = download(url, tmp)
-        return analyze_pdf(path, url, now, {**url_metadata(url), **fetched})
+        try:
+            path, fetched = download(url, tmp)
+            return analyze_pdf(path, url, now, {**url_metadata(url), **fetched})
+        except FetchError as error:
+            if not (discover and _worth_searching(error)):
+                raise
+            try:
+                path, fetched, official = discover_report(url, tmp)
+            except FetchError as search_error:
+                raise FetchError(f"{error} {search_error}", 403 if search_error.status == 403 else error.status)
+            source = {**url_metadata(url), **fetched, "requestedUrl": url, "resolvedUrl": official, "originalError": str(error)}
+            return analyze_pdf(path, url, now, source)

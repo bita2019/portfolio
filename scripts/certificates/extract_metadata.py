@@ -72,9 +72,12 @@ def gather(sources: list[str], urls_file: str | None, recursive: bool) -> list[t
 
 
 def extract_one(kind: str, value: str) -> dict:
-    entry = {"url": value if kind == "url" else None, "file": value if kind == "file" else None}
+    entry = {"url": value if kind == "url" else None, "requestedUrl": None, "file": value if kind == "file" else None}
     try:
         result = process(value) if kind == "url" else analyze_pdf(value)
+        resolved = (result.get("source") or {}).get("resolvedUrl")
+        if resolved:  # the link given failed, the report was found on the company's site: that address is the one that was read
+            entry.update(url=resolved, requestedUrl=value)
         return {**entry, "status": "read", **summarize(result)}
     except Exception as error:  # one bad PDF must not stop the other 26
         return {**entry, "status": "not read", **{k: None for k, _ in FIELDS}, "notes": [str(error) or error.__class__.__name__]}
@@ -115,7 +118,7 @@ def to_markdown(entries: list[dict]) -> str:
                                        _md(e["reportTitle"]), _md(e["reportingPeriod"]), _md(e["startDate"]), _md(e["endDate"])]) + " |")
     out += ["", "## Sources and notes", ""]
     for i, e in enumerate(entries, 1):
-        out.append(f"{i}. `{e['url'] or e['file']}`")
+        out.append(f"{i}. `{e['url'] or e['file']}`" + (f" (requested: `{e['requestedUrl']}`)" if e["requestedUrl"] else ""))
         for note in e["notes"]:
             out.append(f"   - {note}")
     out += ["", "Reporting period is the period as written in the report. Start and end dates are given only when the report states them; "
@@ -127,19 +130,19 @@ def to_xlsx(entries: list[dict], path: Path) -> None:
     wb = Workbook()
     ws = wb.active
     ws.title = "Metadata"
-    header = ["#", "URL", "File", "Status"] + [label for _, label in FIELDS] + ["Notes"]
+    header = ["#", "URL", "Requested URL (if the link failed)", "File", "Status"] + [label for _, label in FIELDS] + ["Notes"]
     ws.append(header)
     for i, e in enumerate(entries, 1):
-        row = [i, e["url"], e["file"], e["status"]]
+        row = [i, e["url"], e["requestedUrl"], e["file"], e["status"]]
         for key, _ in FIELDS:
             value = e[key]
             row.append(date.fromisoformat(value) if key in ("startDate", "endDate") and value else value)
         row.append("; ".join(e["notes"]) or None)
         ws.append(row)
     col = {name: i for i, name in enumerate(header, 1)}
-    widths = {"#": 5, "URL": 45, "File": 40, "Status": 10, "Company name": 28, "Country": 16, "City": 16, "Author or issuer": 28,
+    widths = {"#": 5, "URL": 45, "Requested URL (if the link failed)": 40, "File": 40, "Status": 10, "Company name": 28, "Country": 16, "City": 16, "Author or issuer": 28,
               "Author / issuer": 11, "Title of report": 38, "Reporting period": 26, "Start date": 12, "End date": 12, "Notes": 60}
-    wrap = {col[n] for n in ("URL", "File", "Company name", "Title of report", "Reporting period", "Notes")}
+    wrap = {col[n] for n in ("URL", "Requested URL (if the link failed)", "File", "Company name", "Title of report", "Reporting period", "Notes")}
     for cell in ws[1]:
         cell.font = Font(name=FONT, bold=True, color="FFFFFF")
         cell.fill = PatternFill("solid", fgColor="1F3864")

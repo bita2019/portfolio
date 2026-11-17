@@ -12,6 +12,9 @@ def _issuer(company: str | None) -> tuple[str | None, str | None]:
 def summarize(full: dict) -> dict:
     """Boil a full extraction result down to the fields people asked for, plus notes on anything uncertain."""
     notes = []
+    source = full.get("source") or {}
+    if source.get("resolvedUrl"):
+        notes.append(f"the link given did not work ({source['originalError'].rstrip('.')}); the report was found on the company's website: {source['resolvedUrl']}")
     if full["kind"] == "certificate":
         c = full["certificate"]
         org = c["organization"]

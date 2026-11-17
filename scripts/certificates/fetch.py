@@ -74,8 +74,8 @@ def _via_proxy(url: str) -> bool:
     )
 
 
-def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
-    """Download a PDF, following redirects manually so each hop is re-checked."""
+def _open(url: str, accept: str):
+    """GET a URL, following redirects manually so each hop is re-checked. Returns (response, final url, redirect chain)."""
     chain = []
     decoded_colon = False
     session = requests.Session()
@@ -85,7 +85,7 @@ def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
         for attempt in range(3):  # a dropped connection is retried (2 s, 4 s) before giving up
             try:
                 resp = session.get(current, stream=True, allow_redirects=False, timeout=TIMEOUT,
-                                   headers={"User-Agent": USER_AGENT, "Accept": "application/pdf,*/*;q=0.5"})
+                                   headers={"User-Agent": USER_AGENT, "Accept": accept})
                 break
             except requests.exceptions.ProxyError:
                 raise FetchError("The network proxy refused or could not reach this host (check its egress allowlist).", 502)
@@ -112,7 +112,29 @@ def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
         break
     else:
         raise FetchError("Too many redirects.", 502)
+    return resp, current, chain
 
+
+def fetch_page(url: str, max_bytes: int = 2 * 1024 * 1024) -> tuple[str, str]:
+    """Download a web page (HTML) for link discovery. Returns (html, final url)."""
+    resp, current, _ = _open(url, "text/html,application/xhtml+xml;q=0.9,*/*;q=0.5")
+    with resp:
+        if resp.status_code != 200:
+            raise FetchError(f"The server answered HTTP {resp.status_code}.", 502)
+        kind = (resp.headers.get("Content-Type") or "").lower()
+        if "html" not in kind and "xml" not in kind:
+            raise FetchError(f"Not a web page ({kind.split(';')[0] or 'unknown type'}).", 415)
+        body = b""
+        for block in resp.iter_content(64 * 1024):
+            body += block
+            if len(body) > max_bytes:
+                break
+        return body[:max_bytes].decode(resp.encoding or "utf-8", "replace"), current
+
+
+def download(url: str, dest_dir: str | Path) -> tuple[Path, dict]:
+    """Download a PDF, following redirects manually so each hop is re-checked."""
+    resp, current, chain = _open(url, "application/pdf,*/*;q=0.5")
     with resp:
         if resp.status_code != 200:
             raise FetchError(f"The server answered HTTP {resp.status_code}.", 502)

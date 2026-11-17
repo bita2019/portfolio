@@ -30,14 +30,14 @@ def test_folder_run_writes_json_xlsx_and_markdown(tmp_path, capsys):
     assert cli.main([str(pdfs), "-o", str(out)]) == 0
     entries = json.loads(out.with_suffix(".json").read_text())
     assert [(e["file"].split("/")[-1], e["status"]) for e in entries] == [("broken.pdf", "not read"), ("cert.pdf", "read"), ("report.pdf", "read")]
-    assert set(entries[1]) == {"url", "file", "status", "companyName", "country", "city", "authorOrIssuer", "authorOrIssuerRole",
+    assert set(entries[1]) == {"url", "requestedUrl", "file", "status", "companyName", "country", "city", "authorOrIssuer", "authorOrIssuerRole",
                                "reportTitle", "reportingPeriod", "startDate", "endDate", "notes"}
     assert entries[1]["companyName"] == "Acme Castings GmbH" and entries[1]["endDate"] == "2027-05-21"
     assert entries[2]["companyName"] == "BORG Automotive Group" and entries[2]["reportTitle"] == "ESG REPORT 2024"
     assert entries[0]["notes"] and entries[0]["companyName"] is None  # the reason, and no stop
 
     ws = load_workbook(out.with_suffix(".xlsx"))["Metadata"]
-    assert [c.value for c in ws[1]][:6] == ["#", "URL", "File", "Status", "Company name", "Country"]
+    assert [c.value for c in ws[1]][:7] == ["#", "URL", "Requested URL (if the link failed)", "File", "Status", "Company name", "Country"]
     assert ws.max_row == 4
     assert "2 of 3 PDFs were read" in out.with_suffix(".md").read_text()
 
