@@ -78,10 +78,10 @@
   },
   {
     "url": "https://www.ufifilters.com/wp-content/uploads/downloads/pdfs/Sustainability_Report_2024/UFI_Sustainability_Report_2024.pdf",
-    "companyName": "UFI Filters S.p.A",
+    "companyName": "UFI Filters S.p.A.",
     "country": "Italy",
     "city": "Nogarole Rocca",
-    "authorOrIssuer": "UFI Filters S.p.A",
+    "authorOrIssuer": "UFI Filters S.p.A.",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "SUSTAINABILITY REPORT 2024",
     "startDate": "2024-01-01",
@@ -121,6 +121,17 @@
     "endDate": null
   },
   {
+    "url": "https://cdn.arcelormittal.com/media/tftkqzrq/2024-sustainability-report.pdf",
+    "companyName": "ArcelorMittal S.A.",
+    "country": "Luxembourg",
+    "city": "Luxembourg",
+    "authorOrIssuer": "ArcelorMittal S.A.",
+    "authorOrIssuerRole": "issuer",
+    "reportTitle": "Sustainability Report 2024",
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31"
+  },
+  {
     "url": "https://www.nipponsteel.com/en/sustainability/report/pdf/report2023en.pdf",
     "companyName": "Nippon Steel Corporation",
     "country": "Japan",
@@ -155,10 +166,10 @@
   },
   {
     "url": "https://www.acciaierievenete.com/sites/default/files/bilanci-sostenibilita/file/Acciaierie-Venete_Sustainability-Report_2023_0.pdf",
-    "companyName": "Acciaierie Venete S.p.A",
+    "companyName": "Acciaierie Venete S.p.A.",
     "country": "Italy",
     "city": "Borgo Valsugana",
-    "authorOrIssuer": "Acciaierie Venete S.p.A",
+    "authorOrIssuer": "Acciaierie Venete S.p.A.",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2023 SUSTAINABILITY REPORT",
     "startDate": "2023-01-01",
@@ -166,10 +177,10 @@
   },
   {
     "url": "https://www.cnh.com/-/media/CNHi/cnhicorporate/Sustainability/sustainability_reports/docs/CNH_Sustainability_2024_web.pdf",
-    "companyName": "CNH Industrial NV",
+    "companyName": "CNH Industrial N.V.",
     "country": "United States",
     "city": "Oak Brook",
-    "authorOrIssuer": "CNH Industrial NV",
+    "authorOrIssuer": "CNH Industrial N.V.",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "SUSTAINABILITY REPORT 2024",
     "startDate": "2024-01-01",
@@ -229,6 +240,17 @@
     "reportTitle": "Sustainability Report",
     "startDate": null,
     "endDate": null
+  },
+  {
+    "url": "https://www.stellantis.com/content/dam/stellantis-corporate/sustainability/esg-disclosures/Stellantis-Expanded-Sustainability-Statement-2024.pdf",
+    "companyName": "Stellantis N.V.",
+    "country": "Netherlands",
+    "city": "Hoofddorp",
+    "authorOrIssuer": "Stellantis N.V.",
+    "authorOrIssuerRole": "issuer",
+    "reportTitle": "2024 Expanded Sustainability Statement",
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31"
   },
   {
     "url": "https://global.toyota/pages/global_toyota/sustainability/report/sdb/sdb24_en.pdf",
