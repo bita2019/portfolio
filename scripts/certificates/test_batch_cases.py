@@ -147,3 +147,19 @@ def test_a_connection_that_never_recovers_fails_cleanly(tmp_path):
         with pytest.raises(fetch.FetchError) as error:
             fetch.download("https://example.com/a.pdf", tmp_path)
     assert error.value.status == 502 and "ConnectionError" in str(error.value)
+
+
+def test_dutch_postcode_letters_are_not_part_of_the_city():
+    assert loc(["x", "Taurusavenue 1\n2132 LS Hoofddorp\nThe Netherlands"], "Stellantis N.V.", "Stellantis") == ("Hoofddorp", "Netherlands")
+
+
+def test_a_city_state_may_have_the_same_name_as_its_country():
+    page = "24-26, Boulevard d’Avranches\nL-1160 Luxembourg\nGrand Duchy of Luxembourg\ncorporate.arcelormittal.com"
+    assert loc(["intro", page], "ArcelorMittal S.A.", "ArcelorMittal") == ("Luxembourg", "Luxembourg")
+    assert loc(["x", "Our customers in Luxembourg."], "Acme", "Acme") == (None, None)  # a bare mention is still not an address
+
+
+def test_dotted_legal_forms_keep_their_final_period_and_do_not_split_the_name():
+    text = "Stellantis N.V. reported results. " * 4 + "Stellantis is a global group. " * 6
+    c = detect_company("https://www.stellantis.com/x.pdf", [text])
+    assert c["name"] == "Stellantis N.V." and c["shortName"] == "Stellantis"

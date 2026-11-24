@@ -8,6 +8,7 @@
     python extract_metadata.py report.pdf other.pdf              # specific files
     python extract_metadata.py --urls urls.txt                   # URLs, one per line
     python extract_metadata.py pdf_folder --urls urls.txt -o results/metadata
+    python extract_metadata.py --urls urls.txt --file-url report.pdf=https://example.com/report.pdf   # use the file for that URL
 
 Writes <out>.json, <out>.xlsx, <out>.md and <out>.mongo.json (default <out> is "metadata").
 With --mongo (or --mongo-uri) the same records are also upserted into MongoDB, one document per report, keyed on "url":
@@ -49,36 +50,47 @@ def is_url(text: str) -> bool:
     return text.lower().startswith(("http://", "https://"))
 
 
-def gather(sources: list[str], urls_file: str | None, recursive: bool) -> list[tuple[str, str]]:
-    """Turn the command line into a list of ("file" | "url", value)."""
-    items: list[tuple[str, str]] = []
+def gather(sources: list[str], urls_file: str | None, recursive: bool, file_urls: dict[str, str] | None = None) -> list[tuple]:
+    """Turn the command line into a list of ("file" | "url", value, address the file was published at or None).
+
+    file_urls maps a downloaded PDF to the URL it came from (--file-url): a URL that is also in the list is read from that
+    file instead of being fetched, in the same position, so a site that refuses automated downloads can still be covered.
+    """
+    by_url = {url: str(Path(path).expanduser()) for path, url in (file_urls or {}).items()}
+    items: list[tuple] = []
     for source in sources:
         if is_url(source):
-            items.append(("url", source))
+            items.append(("file", by_url.pop(source), source) if source in by_url else ("url", source, None))
             continue
         path = Path(source).expanduser()
         if path.is_dir():
             found = sorted(path.rglob("*") if recursive else path.glob("*"))
-            items += [("file", str(p)) for p in found if p.is_file() and p.suffix.lower() == ".pdf"]
+            items += [("file", str(p), None) for p in found if p.is_file() and p.suffix.lower() == ".pdf"]
         elif path.is_file():
-            items.append(("file", str(path)))
+            items.append(("file", str(path), None))
         else:
             sys.exit(f"Not found: {source}")
     if urls_file:
         for line in Path(urls_file).expanduser().read_text(encoding="utf-8").splitlines():
             if line.strip() and not line.lstrip().startswith("#"):
-                items.append(("url", line.strip()))
+                url = line.strip()
+                items.append(("file", by_url.pop(url), url) if url in by_url else ("url", url, None))
+    items += [("file", path, url) for url, path in by_url.items()]  # mapped files whose URL was not in the list
     return items
 
 
-def extract_one(kind: str, value: str) -> dict:
-    entry = {"url": value if kind == "url" else None, "requestedUrl": None, "file": value if kind == "file" else None}
+def extract_one(kind: str, value: str, published_at: str | None = None) -> dict:
+    """published_at: for a PDF file, the address it was published at (helps find the company; becomes the record's url)."""
+    entry = {"url": value if kind == "url" else published_at, "requestedUrl": None, "file": value if kind == "file" else None}
     try:
-        result = process(value) if kind == "url" else analyze_pdf(value)
+        result = process(value) if kind == "url" else analyze_pdf(value, published_at)
         resolved = (result.get("source") or {}).get("resolvedUrl")
         if resolved:  # the link given failed, the report was found on the company's site: that address is the one that was read
             entry.update(url=resolved, requestedUrl=value)
-        return {**entry, "status": "read", **summarize(result)}
+        summary = summarize(result)
+        if kind == "file" and published_at:
+            summary["notes"] = [f"read from the PDF file supplied; url is the address it was published at"] + summary["notes"]
+        return {**entry, "status": "read", **summary}
     except Exception as error:  # one bad PDF must not stop the other 26
         return {**entry, "status": "not read", **{k: None for k, _ in FIELDS}, "notes": [str(error) or error.__class__.__name__]}
 
@@ -189,6 +201,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--urls", metavar="FILE", help="text file with one URL per line (# starts a comment)")
     ap.add_argument("-o", "--out", default="metadata", metavar="BASE", help="output path without extension (default: metadata)")
     ap.add_argument("-r", "--recursive", action="store_true", help="also look in sub-folders of a folder")
+    ap.add_argument("--file-url", action="append", default=[], metavar="PDF=URL",
+                    help="a downloaded PDF and the URL it came from (repeatable); used instead of fetching that URL")
     ap.add_argument("--mongo", action="store_true", help="also write the records to MongoDB (connection string from $MONGODB_URI)")
     ap.add_argument("--mongo-uri", metavar="URI", help="MongoDB connection string (implies --mongo)")
     ap.add_argument("--mongo-db", default=os.getenv("MONGODB_DB", "portfolio"), help="database name (default: portfolio, or $MONGODB_DB)")
@@ -199,12 +213,18 @@ def main(argv: list[str] | None = None) -> int:
     mongo_uri = args.mongo_uri or (os.getenv("MONGODB_URI") if args.mongo else None)
     if (args.mongo or args.mongo_uri) and not mongo_uri:
         ap.error("--mongo needs a connection string: set $MONGODB_URI or pass --mongo-uri")
-    items = gather(args.sources, args.urls, args.recursive)
+    file_urls = {}
+    for pair in args.file_url:
+        path, _, url = pair.rpartition("=")
+        if not path or not is_url(url) or not Path(path).expanduser().is_file():
+            ap.error(f"--file-url needs an existing PDF and a URL, as PDF=URL (got: {pair})")
+        file_urls[path] = url
+    items = gather(args.sources, args.urls, args.recursive, file_urls)
     if not items:
         ap.error("nothing to do: give PDF files, a folder, URLs, or --urls FILE")
     entries = []
-    for n, (kind, value) in enumerate(items, 1):
-        entry = extract_one(kind, value)
+    for n, (kind, value, published_at) in enumerate(items, 1):
+        entry = extract_one(kind, value, published_at)
         entries.append(entry)
         label = Path(value).name if kind == "file" else value
         print(f"[{n}/{len(items)}] {entry['status']:8} {label[:70]}" + (f"  ->  {entry['companyName']}" if entry["companyName"] else ""), flush=True)

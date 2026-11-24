@@ -159,7 +159,8 @@ def detect_company(url: str | None, texts: list[str]) -> dict:
                 words = words[1:]
             if words and _plausible(" ".join(words)):
                 form = m.group(2).rstrip(".")
-                name = " ".join(words) + " " + (form + "." if form.lower() in {"inc", "corp", "co"} else form)
+                dotted = "." in form  # N.V., S.p.A.: the closing period belongs to the abbreviation
+                name = " ".join(words) + " " + (form + "." if form.lower() in {"inc", "corp", "co"} or dotted else form)
                 legal[name] += weight
                 legal_raw[name] += 1
 

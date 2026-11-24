@@ -309,3 +309,30 @@ def test_year_printed_after_the_title_is_attached(tmp_path):
     page.insert_text((50, 300), "Board message", fontsize=9)
     doc.save(tmp_path / "y.pdf")
     assert extract_document(tmp_path / "y.pdf")["title"] == "ANNUAL ESG REPORT 2023"
+
+
+def _cover(path, pieces):
+    doc = pymupdf.open()
+    page = doc.new_page()
+    for (x, y, size, text) in pieces:
+        page.insert_text((x, y), text, fontsize=size)
+    doc.save(path)
+    return path
+
+
+def test_a_year_printed_in_pieces_is_joined_to_the_report_name(tmp_path):
+    from report import extract_document
+
+    p = _cover(tmp_path / "s.pdf", [(40, 120, 90, "20"), (160, 120, 90, "24"), (40, 180, 20, "Expanded Sustainability Statement"),
+                                     (40, 700, 8, "Stellantis")])
+    assert extract_document(p)["title"] == "2024 Expanded Sustainability Statement"
+
+
+def test_a_cover_slogan_gives_way_to_the_named_report_line(tmp_path):
+    from report import extract_document
+
+    named = _cover(tmp_path / "a.pdf", [(40, 120, 40, "Innovating for a safer future"), (40, 700, 9, "ArcelorMittal"),
+                                        (40, 720, 9, "Sustainability Report 2024")])
+    assert extract_document(named)["title"] == "Sustainability Report 2024"
+    slogan_only = _cover(tmp_path / "b.pdf", [(40, 120, 40, "Engineering a sustainable future 2024"), (40, 700, 9, "Castings plc")])
+    assert extract_document(slogan_only)["title"] == "Engineering a sustainable future 2024"  # no report line to prefer

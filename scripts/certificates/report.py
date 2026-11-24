@@ -117,8 +117,13 @@ GENERIC_TITLE = re.compile(
 GENERIC_BOOKMARK = re.compile(r"^(slide|page|bookmark)\s*\d+$", re.I)
 
 
-def _page_heading(page) -> str | None:
-    """The largest text on the page, e.g. the cover title (chunks of the same size are joined)."""
+TITLE_LABEL = re.compile(
+    r"(?i)\b(sustainability|esg|annual|integrated|environmental|climate|corporate|data ?book)\b.{0,30}\b(report|statement|review|data ?book)\b|"
+    r"\b(report|statement)\s+20\d\d")
+REPORT_WORD = re.compile(r"(?i)report|statement|review|data ?book|esg|sustainab")
+
+
+def _page_chunks(page) -> list[tuple[float, str]]:
     chunks: list[tuple[float, str]] = []
 
     def visit(text, cm, tm, font_dict, font_size):
@@ -130,15 +135,20 @@ def _page_heading(page) -> str | None:
     try:
         page.extract_text(visitor_text=visit)
     except Exception:
-        return None
+        return []
+    return chunks
+
+
+def _page_heading(page, chunks: list[tuple[float, str]] | None = None) -> str | None:
+    """The largest text on the page, e.g. the cover title (chunks of the same size are joined)."""
+    chunks = _page_chunks(page) if chunks is None else chunks
     if not chunks:
         return None
     biggest = max(size for size, _ in chunks)
     big = [i for i, (size, _) in enumerate(chunks) if size >= biggest * 0.95]
     first, last = big[0], big[-1]
-    words = " ".join(text for _, text in chunks[first: last + 1] if True).split()
+    words = " ".join(text for _, text in chunks[first: last + 1]).split()
     end = last
-    # A cover title is often split into blocks ("ESG" / "REPORT" / "2024"): take a short continuation when the heading is tiny
     tail = re.compile(r"(?:[\w&]+\s+){0,2}(?:reports?|statement|review|summary|update|data\s?book|databook)", re.I)
     # A cover title is often split into blocks ("ESG" / "REPORT" / "2024"): continue a one-word heading, or one ending in a title word
     while end + 1 < len(chunks) and len(chunks[end + 1][1]) <= 25 and end - last < 2 and (
@@ -149,6 +159,22 @@ def _page_heading(page) -> str | None:
     if end + 1 < len(chunks) and re.fullmatch(r"20\d{2}", chunks[end + 1][1]) and not re.search(r"20\d{2}", " ".join(words)):
         words += chunks[end + 1][1].split()  # a year printed just after the title belongs to it
     return " ".join(words)[:160] or None
+
+
+def _cover_title(page) -> str | None:
+    """The cover's title. The biggest text is sometimes only a year ("20" "24") or a slogan, with the report's real name
+    in smaller type ("Expanded Sustainability Statement", "Sustainability Report 2024"): then that line is the title."""
+    chunks = _page_chunks(page)
+    heading = _page_heading(page, chunks)
+    if not heading:
+        return None
+    label = next((t for _, t in chunks if TITLE_LABEL.search(t) and len(t) < 70 and t not in heading), None)
+    digits = re.sub(r"\s", "", heading)
+    if digits.isdigit() and (m := re.match(r"20\d\d", digits)):
+        return f"{m.group(0)} {label}" if label else m.group(0)  # the year was printed in pieces: "20" "24"
+    if label and not REPORT_WORD.search(heading):
+        return label
+    return heading
 
 
 def _clean_title(title: str | None) -> str | None:
@@ -209,7 +235,7 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
         pass
 
     pdf_title = (meta.title if meta and meta.title else None) or None
-    title, title_source = _choose_title(pdf_title, _page_heading(pages[0]) if len(pages) else None, first_line, " ".join(texts[:2]))
+    title, title_source = _choose_title(pdf_title, _cover_title(pages[0]) if len(pages) else None, first_line, " ".join(texts[:2]))
     title = _clean_title(title)
 
     company = detect_company(url, texts)

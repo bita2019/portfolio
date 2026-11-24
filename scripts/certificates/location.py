@@ -13,7 +13,7 @@ COUNTRIES = {
     "Denmark": ["Denmark", "Danmark"], "Finland": ["Finland", "Suomi"], "Poland": ["Poland", "Polska"],
     "Czech Republic": ["Czech Republic", "Czechia"], "Slovakia": ["Slovakia"], "Hungary": ["Hungary"],
     "Romania": ["Romania"], "Slovenia": ["Slovenia"], "Croatia": ["Croatia"], "Greece": ["Greece"],
-    "Ireland": ["Ireland"], "Luxembourg": ["Luxembourg"], "Turkey": ["Turkey", "Türkiye"],
+    "Ireland": ["Ireland"], "Luxembourg": ["Grand Duchy of Luxembourg", "Luxembourg"], "Turkey": ["Turkey", "Türkiye"],
     "Canada": ["Canada"], "Mexico": ["Mexico"], "Brazil": ["Brazil", "Brasil"], "India": ["India"],
     "China": ["China"], "Japan": ["Japan"], "South Korea": ["South Korea", "Korea"], "Taiwan": ["Taiwan"],
     "Singapore": ["Singapore"], "Australia": ["Australia"], "South Africa": ["South Africa"],
@@ -42,7 +42,7 @@ STREET = re.compile(r"\d|\b(road|street|lane|avenue|drive|way|close|park|estate|
 UK_POSTCODE = re.compile(r"\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b")
 ITALY = re.compile(r"\b\d{5}\s+([A-Z][\w'’ -]{1,30}?)\s*\(([A-Z]{2})\)")
 US_ZIP = re.compile(r"\b([A-Z][a-z]+(?: [A-Z][a-z]+)?),?\s+([A-Z]{2})\s+\d{5}(?:-\d{4})?\b")
-POSTAL_LINE = re.compile(r"^(\d{4,5})\s+([A-Z][^\W\d_][\w'’. -]{2,28})$")
+POSTAL_LINE = re.compile(r"^(?:[A-Z]{1,2}-)?(\d{4,5})\s+([A-Z][^\W\d_][\w'’. -]{2,28})$")  # "35260 Stadtallendorf", "L-1160 Luxembourg"
 HQ = re.compile(
     r"(?i:headquarter(?:s|ed)|head ?office|registered office|principal office)\s+(?:(?i:is|are)\s+)?(?:(?i:located|situated|based)\s+)?(?i:in)\s+"
     r"(?:the\s+(?:city|town)\s+of\s+)?([A-Z][\w.'’ -]{1,30}?)(?:\s*\(([A-Z]{2})\))?(?:,\s*([A-Z][\w.'’ -]{1,30}?))?"
@@ -75,9 +75,15 @@ def _classify(first: str, second: str | None) -> tuple[str | None, str | None]:
     return first.strip(), None
 
 
+CITY_STATES = {"Luxembourg", "Singapore"}
+
+
 def _clean_city(text: str) -> str | None:
     text = re.sub(r"\s+", " ", text).strip(" ,.-|")
-    if not text or len(text) > 32 or NOT_A_CITY.search(text) or BAD_CITY.search(text) or country_of(text):
+    text = re.sub(r"^[A-Z]{2}\s+(?=[A-Z])", "", text)  # Dutch postcodes are "2132 LS Hoofddorp": the letters are not the city
+    if not text or len(text) > 32 or NOT_A_CITY.search(text) or BAD_CITY.search(text):
+        return None
+    if country_of(text) and country_of(text) not in CITY_STATES:
         return None
     return text
 

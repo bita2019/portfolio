@@ -50,7 +50,7 @@ def test_gather_reads_urls_files_and_comments(tmp_path):
     f.write_text("# comment\nhttps://a.example/x.pdf\n\n  https://b.example/y.pdf  \n")
     pdf = make_pdf(tmp_path / "one.pdf", TUV)
     items = cli.gather([str(pdf), "https://c.example/z.pdf"], str(f), False)
-    assert items == [("file", str(pdf)), ("url", "https://c.example/z.pdf"), ("url", "https://a.example/x.pdf"), ("url", "https://b.example/y.pdf")]
+    assert items == [("file", str(pdf), None), ("url", "https://c.example/z.pdf", None), ("url", "https://a.example/x.pdf", None), ("url", "https://b.example/y.pdf", None)]
 
 
 def test_company_without_a_url_prefers_the_subject_over_headings_and_ignores_codes_auditors_and_abbreviations():
@@ -105,3 +105,22 @@ def test_mongo_flag_without_a_connection_string_is_an_error(tmp_path, monkeypatc
     monkeypatch.delenv("MONGODB_URI", raising=False)
     with pytest.raises(SystemExit):
         cli.main([str(make_pdf(tmp_path / "x.pdf", TUV)), "--mongo"])
+
+
+def test_a_downloaded_pdf_replaces_the_fetch_of_its_url_in_the_same_position(tmp_path):
+    urls = tmp_path / "urls.txt"
+    urls.write_text("https://a.example/one.pdf\nhttps://blocked.example/report.pdf\nhttps://c.example/three.pdf\n")
+    pdf = make_pdf(tmp_path / "saved.pdf", TUV)
+    items = cli.gather([], str(urls), False, {str(pdf): "https://blocked.example/report.pdf"})
+    assert [(k, h) for k, v, h in items] == [("url", None), ("file", "https://blocked.example/report.pdf"), ("url", None)]
+    entry = cli.extract_one("file", str(pdf), "https://blocked.example/report.pdf")
+    assert entry["url"] == "https://blocked.example/report.pdf" and entry["file"] == str(pdf) and entry["status"] == "read"
+    assert entry["notes"][0].startswith("read from the PDF file supplied")
+    assert cli.to_contract(entry)["url"] == "https://blocked.example/report.pdf"  # the contract keeps the published address
+
+
+def test_file_url_option_rejects_a_bad_pair(tmp_path):
+    import pytest
+
+    with pytest.raises(SystemExit):
+        cli.main([str(make_pdf(tmp_path / "x.pdf", TUV)), "--file-url", "missing.pdf=https://x.example/a.pdf"])
