@@ -61,9 +61,9 @@ def test_postal_line_uses_vat_prefix_and_web_address_as_fallbacks():
     ("This report covers 1 April 2023 up to and including 31 March 2024.", 2024, "2023-04-01", "2024-03-31", "stated"),
     # whole months
     ("Period covered The period covered in the report is fiscal 2022 (from April 2022 to March 2023).", 2023, "2022-04-01", "2023-03-31", "stated (whole months)"),
-    # a stated 12-month year
-    ("It is the ESG Report for the year to 31 March 2024.", 2024, "2023-04-01", "2024-03-31", "end date stated"),
-    ("This report covers the year ended 29 February 2024.", 2024, "2023-03-01", "2024-02-29", "end date stated"),
+    # only a year end is stated: an end date and no start date
+    ("It is the ESG Report for the year to 31 March 2024.", 2024, None, "2024-03-31", "only the end date is stated"),
+    ("This report covers the year ended 29 February 2024.", 2024, None, "2024-02-29", "only the end date is stated"),
     # the calendar year is January to December by definition
     ("the scope (reporting period) of the Sustainability Report covers information and data for the year 2024 \u2014 which coincides with the "
      "calendar year \u2014 for all segments", 2024, "2024-01-01", "2024-12-31", "stated (calendar year)"),
@@ -71,6 +71,16 @@ def test_postal_line_uses_vat_prefix_and_web_address_as_fallbacks():
 def test_dates_the_report_states(text, year, start, end, basis):
     r = report_dates([text], None, year)
     assert (r["startDate"], r["endDate"]) == (start, end) and r["basis"].startswith(basis)
+
+
+def test_a_stated_year_end_gives_no_start_date_unless_deriving_is_switched_on():
+    text = "It is the ESG Report for the year to 31 March 2024."
+    off = find_period([text], None, 2024)
+    assert (off["periodText"], off["startDate"], off["endDate"]) == ("year to 31 March 2024", None, "2024-03-31")
+    on = find_period([text], None, 2024, derive_start=True)
+    assert (on["startDate"], on["endDate"]) == ("2023-04-01", "2024-03-31") and "assumption" in on["basis"]
+    leap = find_period(["This report covers the year ended 29 February 2024."], None, 2024, derive_start=True)
+    assert (leap["startDate"], leap["endDate"]) == ("2023-03-01", "2024-02-29")
 
 
 def test_a_range_about_something_else_is_not_the_reporting_period():
@@ -98,16 +108,29 @@ def test_nothing_is_inferred(text):
     assert r == {"startDate": None, "endDate": None, "basis": "not stated in the report", "text": None}
 
 
-def test_summary_keeps_the_reporting_period_text_and_notes_missing_dates():
-    doc = {"company": {"name": "Acme Ltd", "confidence": "high", "source": "content+url"}, "author": "Someone",
-           "location": {"city": "X", "country": "Y", "countryEvidence": "address"}, "title": "T", "titleSource": "pdf-metadata",
-           "scope": {"reportingPeriod": "FY2023"}, "dates": report_dates(["MFG FY2023 results"], None)}
-    s = summarize({"kind": "document", "document": doc})
+def _doc(dates, period=None):
+    return {"company": {"name": "Acme Ltd", "confidence": "high", "source": "content+url"}, "author": "Someone",
+            "location": {"city": "X", "country": "Y", "countryEvidence": "address"}, "title": "T", "titleSource": "pdf-metadata",
+            "scope": {"reportingPeriod": period}, "dates": dates}
+
+
+def test_summary_notes_say_exactly_how_each_kind_of_date_was_obtained():
+    s = summarize({"kind": "document", "document": _doc(report_dates(["MFG FY2023 results"], None), "FY2023")})
     assert (s["reportingPeriod"], s["startDate"], s["endDate"]) == ("FY2023", None, None)
     assert "start and end date not stated in the report" in s["notes"]
-    doc["dates"] = report_dates(["This is the ESG Report for the year to 31 March 2024."], None, 2024)
-    s = summarize({"kind": "document", "document": doc})
-    assert (s["startDate"], s["endDate"]) == ("2023-04-01", "2024-03-31") and any("12-month year" in n for n in s["notes"])
+
+    year_end = "This is the ESG Report for the year to 31 March 2024."
+    s = summarize({"kind": "document", "document": _doc(report_dates([year_end], None, 2024), "year to 31 March 2024")})
+    assert (s["startDate"], s["endDate"]) == (None, "2024-03-31") and any("start date not stated" in n for n in s["notes"])
+    s = summarize({"kind": "document", "document": _doc(report_dates([year_end], None, 2024, derive_start=True))})
+    assert (s["startDate"], s["endDate"]) == ("2023-04-01", "2024-03-31") and any("derived (assumption)" in n for n in s["notes"])
+
+    s = summarize({"kind": "document", "document": _doc(report_dates(["This report covers the calendar year 2024."], None, 2024))})
+    assert (s["startDate"], s["endDate"]) == ("2024-01-01", "2024-12-31") and any("calendar year the report names" in n for n in s["notes"])
+    s = summarize({"kind": "document", "document": _doc(report_dates(["The period covered in the report is (from April 2022 to March 2023)."], None, 2023))})
+    assert (s["startDate"], s["endDate"]) == ("2022-04-01", "2023-03-31") and any("first and last day of the months" in n for n in s["notes"])
+    s = summarize({"kind": "document", "document": _doc(report_dates(["This report covers the period from 1 January to 31 December 2024."], None, 2024))})
+    assert s["notes"] == [] or not any("assumption" in n for n in s["notes"])  # a full range needs no caveat
 
 
 def test_the_pdf_author_field_is_never_used():

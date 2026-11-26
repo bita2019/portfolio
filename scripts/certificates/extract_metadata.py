@@ -20,7 +20,7 @@ With --mongo (or --mongo-uri) the same records are also upserted into MongoDB, o
 
 A local PDF is stored with its file:// address as "url". A PDF that could not be read is not written to MongoDB. One row per PDF:
 company name, country, city, author or issuer, title of report, reporting period, start date, end date, notes.
-Start and end dates are filled only when the report states them; nothing is inferred.
+Start and end dates are filled only when the report states them (see the Notes sheet for the exact rule).
 A PDF that cannot be read does not stop the run: it gets status "not read" and the reason in its notes.
 """
 import argparse
@@ -79,11 +79,11 @@ def gather(sources: list[str], urls_file: str | None, recursive: bool, file_urls
     return items
 
 
-def extract_one(kind: str, value: str, published_at: str | None = None) -> dict:
+def extract_one(kind: str, value: str, published_at: str | None = None, derive_start: bool = False) -> dict:
     """published_at: for a PDF file, the address it was published at (helps find the company; becomes the record's url)."""
     entry = {"url": value if kind == "url" else published_at, "requestedUrl": None, "file": value if kind == "file" else None}
     try:
-        result = process(value) if kind == "url" else analyze_pdf(value, published_at)
+        result = process(value, derive_start=derive_start) if kind == "url" else analyze_pdf(value, published_at, derive_start=derive_start)
         resolved = (result.get("source") or {}).get("resolvedUrl")
         if resolved:  # the link given failed, the report was found on the company's site: that address is the one that was read
             entry.update(url=resolved, requestedUrl=value)
@@ -179,7 +179,9 @@ def to_xlsx(entries: list[dict], path: Path) -> None:
         ("PDFs not read", f'=COUNTIF(Metadata!{status}2:{status}2000,"not read")'),
         ("Author / issuer", "'author' = the author named in the PDF; 'issuer' = the company (or, for certificates, the certification body) that published it."),
         ("Reporting period", "The period as written in the report (for example 'April 1, 2024 - March 31, 2025' or 'FY2023'). Empty if the report does not state one."),
-        ("Start / end date", "Filled only when the report states them. Nothing is inferred: an empty date means the report does not state it (a report that gives only a year end has an end date and no start date)."),
+        ("Start / end date", "Taken from the report. Filled when it gives (1) a full range with both dates, (2) whole months (April 2022 to March 2023 = 1 April 2022 to 31 March 2023), "
+         "or (3) a named calendar year (1 January to 31 December). (2) and (3) are noted in the Notes column. A report that states only a year end "
+         "('year ended 31 December 2023') gets an end date and NO start date. Nothing else is inferred; an empty date means the report does not state it."),
         ("Country / city", "The company's base, from an address block or a 'headquartered in' sentence in the report; the web address or VAT prefix is used only as a fallback and is noted."),
         ("Notes column", "Empty means every value was read directly from the report. A note flags anything uncertain or missing."),
     ]:
@@ -203,6 +205,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("-r", "--recursive", action="store_true", help="also look in sub-folders of a folder")
     ap.add_argument("--file-url", action="append", default=[], metavar="PDF=URL",
                     help="a downloaded PDF and the URL it came from (repeatable); used instead of fetching that URL")
+    ap.add_argument("--derive-year-start", action="store_true",
+                    help="when a report states only a year end (\"year ended 31 December 2023\"), assume the year began a year earlier "
+                         "(off by default: the start date is then left empty)")
     ap.add_argument("--mongo", action="store_true", help="also write the records to MongoDB (connection string from $MONGODB_URI)")
     ap.add_argument("--mongo-uri", metavar="URI", help="MongoDB connection string (implies --mongo)")
     ap.add_argument("--mongo-db", default=os.getenv("MONGODB_DB", "portfolio"), help="database name (default: portfolio, or $MONGODB_DB)")
@@ -224,7 +229,7 @@ def main(argv: list[str] | None = None) -> int:
         ap.error("nothing to do: give PDF files, a folder, URLs, or --urls FILE")
     entries = []
     for n, (kind, value, published_at) in enumerate(items, 1):
-        entry = extract_one(kind, value, published_at)
+        entry = extract_one(kind, value, published_at, args.derive_year_start)
         entries.append(entry)
         label = Path(value).name if kind == "file" else value
         print(f"[{n}/{len(items)}] {entry['status']:8} {label[:70]}" + (f"  ->  {entry['companyName']}" if entry["companyName"] else ""), flush=True)

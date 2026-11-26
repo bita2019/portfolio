@@ -43,10 +43,17 @@ def summarize(full: dict) -> dict:
         notes.append(f"country taken from the {loc['countryEvidence']}")
     if not loc["city"]:
         notes.append("city not found")
-    if dates["basis"].startswith("end date stated"):
-        notes.append(f"start date is the first day of the 12-month year the report states: \"{dates['text']}\"")
+    basis = dates["basis"]
+    if basis.startswith("end date stated"):
+        notes.append(f"start date derived (assumption): the report states only \"{dates['text']}\", so the start is taken as the first day of that 12-month year")
+    elif basis == "only the end date is stated":
+        notes.append(f"start date not stated: the report gives only a year end (\"{dates['text']}\")")
+    elif basis == "stated (calendar year)":
+        notes.append(f"dates are the calendar year the report names (\"{dates['text']}\"): 1 January to 31 December")
+    elif basis == "stated (whole months)":
+        notes.append(f"dates are the first and last day of the months the report names (\"{dates['text']}\")")
     elif dates["startDate"] is None:
-        notes.append("start and end date " + dates["basis"])
+        notes.append("start and end date " + basis)
     if not d["titleSource"].startswith(("pdf-metadata", "first-page-heading")):
         notes.append(f"title taken from {d['titleSource']}")
     return {

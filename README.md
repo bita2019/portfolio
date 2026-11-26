@@ -46,8 +46,11 @@ By default it returns a short record: `companyName`, `country`, `city`, `authorO
 `reportTitle`, `reportingPeriod` (as written in the report), `startDate`, `endDate` and `notes` (anything uncertain or missing). Add `?detail=full` for everything the
 extractor found (frameworks, outline, scope statement, company candidates, validation, ...).
 
-Nothing is inferred: `startDate` and `endDate` are filled only when the report states its period (a full range, or just a year end, in which
-case only `endDate` is set and `notes` says so). `reportingPeriod` is the period text as written, for example `April 1, 2024 - March 31, 2025`.
+`startDate` and `endDate` come from the report. They are filled when it gives a full range with both dates, whole months
+("April 2022 to March 2023" is read as 1 April 2022 to 31 March 2023), or a named calendar year (1 January to 31 December); the last
+two are marked in `notes`. A report that states only a year end ("year ended 31 December 2023") gets an `endDate` and **no** `startDate`;
+`--derive-year-start` assumes the year began a year earlier and says so in `notes`. A year label such as "FY2024" gives no dates.
+`reportingPeriod` is the period text as written, for example `April 1, 2024 - March 31, 2025`.
 For a certificate the fields are the holder, its address, the certification body, the standard and the validity dates.
 
 The service downloads caller-supplied URLs, so it only follows http(s) on ports 80/443, re-checks every redirect, refuses hosts that

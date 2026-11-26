@@ -75,10 +75,10 @@ def _scope_statement(pages: list[str]) -> dict | None:
     return None
 
 
-def _scope(pages: list[str], reporting_year: int | None = None) -> dict:
+def _scope(pages: list[str], reporting_year: int | None = None, derive_start: bool = False) -> dict:
     full = "\n".join(pages)
     statement = _scope_statement(pages)
-    period = find_period(pages, statement["text"] if statement else None, reporting_year)
+    period = find_period(pages, statement["text"] if statement else None, reporting_year, derive_start=derive_start)
     approach, seen = [], set()
     for m in APPROACH.finditer(full):
         item = (m.group(2).upper() if m.group(2).lower() != "ghg protocol" else "GHG Protocol", m.group(1).lower())
@@ -198,7 +198,7 @@ def _choose_title(pdf_title: str | None, heading: str | None, first_line: str | 
     return None, None
 
 
-def extract_document(path: str | Path, url: str | None = None) -> dict:
+def extract_document(path: str | Path, url: str | None = None, derive_start: bool = False) -> dict:
     path = Path(path)
     reader = PdfReader(path)
     if reader.is_encrypted and not reader.decrypt(""):
@@ -239,7 +239,7 @@ def extract_document(path: str | Path, url: str | None = None) -> dict:
     title = _clean_title(title)
 
     company = detect_company(url, texts)
-    scope = _scope(texts, int(year.group(1)) if year else None)
+    scope = _scope(texts, int(year.group(1)) if year else None, derive_start)
     period = scope.pop("_period")
 
     return {

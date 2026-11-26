@@ -124,3 +124,17 @@ def test_file_url_option_rejects_a_bad_pair(tmp_path):
 
     with pytest.raises(SystemExit):
         cli.main([str(make_pdf(tmp_path / "x.pdf", TUV)), "--file-url", "missing.pdf=https://x.example/a.pdf"])
+
+
+def test_cli_leaves_the_start_empty_for_a_year_end_unless_asked_to_derive_it(tmp_path):
+    from test_extract import make_pdf as mk
+
+    pdf = mk(tmp_path / "ye.pdf", ["ESG Report 2023", "This report covers the year ended 31 December 2023.", "Acme Ltd reported results."])
+    plain = cli.extract_one("file", str(pdf))
+    assert (plain["startDate"], plain["endDate"]) == (None, "2023-12-31")
+    derived = cli.extract_one("file", str(pdf), derive_start=True)
+    assert (derived["startDate"], derived["endDate"]) == ("2023-01-01", "2023-12-31")
+    out = tmp_path / "o"
+    assert cli.main([str(pdf), "-o", str(out)]) == 0 and cli.main([str(pdf), "--derive-year-start", "-o", str(tmp_path / "d")]) == 0
+    assert json.loads(out.with_suffix(".json").read_text())[0]["startDate"] is None
+    assert json.loads((tmp_path / "d.json").read_text())[0]["startDate"] == "2023-01-01"

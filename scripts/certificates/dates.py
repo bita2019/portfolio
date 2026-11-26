@@ -132,9 +132,14 @@ def _candidates(text: str, from_statement: bool) -> list[dict]:
     return found
 
 
-def find_period(texts: list[str], scope_statement: str | None, reporting_year: int | None = None, debug: bool = False):
-    """The reporting period as the report states it. Nothing is inferred: a year label such as "FY2024" gives no dates,
-    a "calendar year" is January to December by definition, and a stated "year to 31 March 2024" is a 12-month period."""
+def find_period(texts: list[str], scope_statement: str | None, reporting_year: int | None = None, debug: bool = False,
+                derive_start: bool = False):
+    """The reporting period as the report states it.
+
+    Dates are returned only when the report gives them: a full range, whole months ("April 2022 to March 2023" is read as
+    1 April 2022 to 31 March 2023), or a named calendar year (January to December by definition). A year label such as
+    "FY2024" gives no dates. A report that states only a year end ("year ended 31 December 2023") gives an end date and no start
+    date, unless derive_start is set, in which case the start is taken to be the day after one year earlier (an assumption)."""
     full = unbreak("\n".join(texts))
     nothing = {"periodText": None, "startDate": None, "endDate": None, "basis": "not stated in the report", "text": None}
 
@@ -166,6 +171,9 @@ def find_period(texts: list[str], scope_statement: str | None, reporting_year: i
     if not scored:
         return nothing
     best = max(scored, key=lambda s: (s[0], s[1]))[2]
+    if best["kind"] == "year_to" and not derive_start:
+        return {"periodText": best["text"], "startDate": None, "endDate": best["end"].isoformat(),
+                "basis": "only the end date is stated", "text": best["text"]}
     if best["kind"] == "label":
         # several year labels may appear: take the year the report is about, then the most frequent one
         labels = [c for _, _, c in scored if c["kind"] == "label"]
@@ -173,11 +181,11 @@ def find_period(texts: list[str], scope_statement: str | None, reporting_year: i
         pick = max(labels, key=lambda c: ((c["year"] == reporting_year), years.count(c["year"]), -c["pos"]))
         return {**nothing, "periodText": pick["text"]}
     basis = {"range": "stated", "months": "stated (whole months)", "calendar": "stated (calendar year)",
-             "year_to": "end date stated; start is the first day of that 12-month year"}[best["kind"]]
+             "year_to": "end date stated; start derived as the first day of that 12-month year (assumption)"}[best["kind"]]
     return {"periodText": best["text"], "startDate": best["start"].isoformat(),
             "endDate": best["end"].isoformat(), "basis": basis, "text": best["text"]}
 
 
-def report_dates(texts: list[str], scope_statement: str | None, reporting_year: int | None = None) -> dict:
-    period = find_period(texts, scope_statement, reporting_year)
+def report_dates(texts: list[str], scope_statement: str | None, reporting_year: int | None = None, derive_start: bool = False) -> dict:
+    period = find_period(texts, scope_statement, reporting_year, derive_start=derive_start)
     return {k: period[k] for k in ("startDate", "endDate", "basis", "text")}

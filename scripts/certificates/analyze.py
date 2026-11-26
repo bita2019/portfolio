@@ -37,12 +37,13 @@ def validate_document(d: dict) -> dict:
     return {"passed": all(x["ok"] for x in checks), "checks": checks}
 
 
-def analyze_pdf(path: str | Path, url: str | None = None, now: datetime | None = None, source: dict | None = None) -> dict:
+def analyze_pdf(path: str | Path, url: str | None = None, now: datetime | None = None, source: dict | None = None,
+                derive_start: bool = False) -> dict:
     """Extract everything from one PDF on disk. `url` (if known) helps find the company name."""
     now = now or datetime.now(timezone.utc)
     path = Path(path)
     try:
-        document = extract_document(path, url)
+        document = extract_document(path, url, derive_start)
         certificate = extract_certificate(path) if looks_like_certificate(document) else None
     except Exception as error:
         raise FetchError(f"The PDF could not be read: {error}", 422)
@@ -67,7 +68,7 @@ def _worth_searching(error: FetchError) -> bool:
     return "The server answered HTTP" in text or "did not return a PDF" in text
 
 
-def process(url: str, now: datetime | None = None, discover: bool = True) -> dict:
+def process(url: str, now: datetime | None = None, discover: bool = True, derive_start: bool = False) -> dict:
     """Download a PDF from a URL (with SSRF protection) and extract everything from it.
 
     If the link fails, the company's own website is searched for the report before giving up (discover=False turns that off).
@@ -75,7 +76,7 @@ def process(url: str, now: datetime | None = None, discover: bool = True) -> dic
     with tempfile.TemporaryDirectory() as tmp:
         try:
             path, fetched = download(url, tmp)
-            return analyze_pdf(path, url, now, {**url_metadata(url), **fetched})
+            return analyze_pdf(path, url, now, {**url_metadata(url), **fetched}, derive_start)
         except FetchError as error:
             if not (discover and _worth_searching(error)):
                 raise
@@ -84,4 +85,4 @@ def process(url: str, now: datetime | None = None, discover: bool = True) -> dic
             except FetchError as search_error:
                 raise FetchError(f"{error} {search_error}", 403 if search_error.status == 403 else error.status)
             source = {**url_metadata(url), **fetched, "requestedUrl": url, "resolvedUrl": official, "originalError": str(error)}
-            return analyze_pdf(path, url, now, source)
+            return analyze_pdf(path, url, now, source, derive_start)
