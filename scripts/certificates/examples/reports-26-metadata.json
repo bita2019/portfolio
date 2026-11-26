@@ -10,7 +10,7 @@
     "authorOrIssuer": "Georg Fischer AG",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "Sustainability Statement",
-    "reportingPeriod": "1 January to 31 December 2024",
+    "reportingPeriod": "January 1, 2024, to December 31, 2024",
     "startDate": "2024-01-01",
     "endDate": "2024-12-31",
     "notes": []
@@ -63,10 +63,10 @@
     "authorOrIssuerRole": "issuer",
     "reportTitle": "Engineering a sustainable future 2024",
     "reportingPeriod": "year to 31 March 2024",
-    "startDate": "2023-04-01",
+    "startDate": null,
     "endDate": "2024-03-31",
     "notes": [
-      "start date is the first day of the 12-month year the report states: \"year to 31 March 2024\""
+      "start date not stated: the report gives only a year end (\"year to 31 March 2024\")"
     ]
   },
   {
@@ -219,7 +219,9 @@
     "reportingPeriod": "April 2022 to March 2023",
     "startDate": "2022-04-01",
     "endDate": "2023-03-31",
-    "notes": []
+    "notes": [
+      "dates are the first and last day of the months the report names (\"April 2022 to March 2023\")"
+    ]
   },
   {
     "url": "https://esg.cmc.com/wp-content/uploads/CMC-ESG-Report-2024.pdf",
@@ -265,10 +267,10 @@
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2023 SUSTAINABILITY REPORT",
     "reportingPeriod": "year ended 31 December 2023",
-    "startDate": "2023-01-01",
+    "startDate": null,
     "endDate": "2023-12-31",
     "notes": [
-      "start date is the first day of the 12-month year the report states: \"year ended 31 December 2023\""
+      "start date not stated: the report gives only a year end (\"year ended 31 December 2023\")"
     ]
   },
   {
@@ -285,7 +287,9 @@
     "reportingPeriod": "calendar year 2024",
     "startDate": "2024-01-01",
     "endDate": "2024-12-31",
-    "notes": []
+    "notes": [
+      "dates are the calendar year the report names (\"calendar year 2024\"): 1 January to 31 December"
+    ]
   },
   {
     "url": "https://assets.new.siemens.com/siemens/assets/api/uuid%3A32a7154d-edba-47bc-8e9b-9761617ba774/sustainability-report.pdf",
@@ -393,11 +397,11 @@
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2024 Expanded Sustainability Statement",
     "reportingPeriod": "year ended December 31, 2024",
-    "startDate": "2024-01-01",
+    "startDate": null,
     "endDate": "2024-12-31",
     "notes": [
       "read from the PDF file supplied; url is the address it was published at",
-      "start date is the first day of the 12-month year the report states: \"year ended December 31, 2024\""
+      "start date not stated: the report gives only a year end (\"year ended December 31, 2024\")"
     ]
   },
   {
@@ -428,10 +432,10 @@
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2023 Sustainability Report Journey to Zero",
     "reportingPeriod": "year ended December 31, 2023",
-    "startDate": "2023-01-01",
+    "startDate": null,
     "endDate": "2023-12-31",
     "notes": [
-      "start date is the first day of the 12-month year the report states: \"year ended December 31, 2023\""
+      "start date not stated: the report gives only a year end (\"year ended December 31, 2023\")"
     ]
   },
   {

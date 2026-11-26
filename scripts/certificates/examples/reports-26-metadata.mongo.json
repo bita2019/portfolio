@@ -40,7 +40,7 @@
     "authorOrIssuer": "Castings PLC",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "Engineering a sustainable future 2024",
-    "startDate": "2023-04-01",
+    "startDate": null,
     "endDate": "2024-03-31"
   },
   {
@@ -172,7 +172,7 @@
     "authorOrIssuer": "Acciaierie Venete S.p.A.",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2023 SUSTAINABILITY REPORT",
-    "startDate": "2023-01-01",
+    "startDate": null,
     "endDate": "2023-12-31"
   },
   {
@@ -249,7 +249,7 @@
     "authorOrIssuer": "Stellantis N.V.",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2024 Expanded Sustainability Statement",
-    "startDate": "2024-01-01",
+    "startDate": null,
     "endDate": "2024-12-31"
   },
   {
@@ -271,7 +271,7 @@
     "authorOrIssuer": "General Motors Company",
     "authorOrIssuerRole": "issuer",
     "reportTitle": "2023 Sustainability Report Journey to Zero",
-    "startDate": "2023-01-01",
+    "startDate": null,
     "endDate": "2023-12-31"
   },
   {
